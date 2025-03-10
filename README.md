@@ -1,2 +1,2 @@
 # haseundigel
-hase und igel board game in Java using JavaFX
+Hase & Igel Board Game for the lecture "Software Engineering" at the DHBW Stuttgart.
