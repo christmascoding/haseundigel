@@ -1,0 +1,46 @@
+[   {
+        "id" : 0,
+        "text" :"Friß sofort einen Salat!"
+    },
+    {
+        "id" : 1,
+        "text" :"Ziehe gleich noch einmal!"
+    },
+    {
+        "id" : 2,
+        "text" :"Rücke sofort um eine Position vor!"
+    },
+    {
+        "id" : 3,
+        "text" :"Du darfst 10 Karotten nehmen oder 10 Karotten abgeben!"
+    },
+    {
+        "id" : 4,
+        "text" :"Du mußt sofort um eine Position zurückfallen!"
+    },
+    {
+        "id" : 5,
+        "text" :"Ziehe sofort vorwärts zum nächsten Karotten-Feld!"
+    },
+    {
+        "id" : 6,
+        "text" :"Dein letzter Zug kostet nichts!"
+    },
+    {
+        "id" : 7,
+        "text" :"Du mußt einmal aussetzen!"
+    },
+    {
+        "id" : 8,
+        "text" :"Ziehe sofort zurück zum letzten Karotten-Feld!"
+    }
+]
+
+
+
+
+
+
+
+
+
