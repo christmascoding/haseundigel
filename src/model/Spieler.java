@@ -1,19 +1,24 @@
-package src;
+package src.model;
 
 import java.awt.*;
 
 public class Spieler {
+    
 
-    private int id;
-    private String name;
+    private int id; // definiert durch intialisierung - genutzt zur identifikation des spielers
+    private String name; // Name des Spielers
     private Color color;
     private int karotten; // Anzahl Karotten eines Spielers auf der Hand
     private int salate;   // Anzahl Salate eines Spielers auf der Hand
+    private boolean nextSuspend; // true wenn spieler nächste runde aussetzt
 
 
-    public Spieler(int karotten, int salate) { // to do how does inti Ressource data from Spiellogik get in here?
+    public Spieler(int id, String name, int karotten, int salate) { // to do how does inti Ressource data from Spiellogik get in here?
+        this.id = id;
+        this.name = name;
         this.karotten = karotten;
         this.salate = salate;
+        this.nextSuspend = false;
     }
 
 
@@ -40,8 +45,8 @@ public class Spieler {
 
     // bei Zwangsrücksetzung auf Start, eines Spielers aufgerufen
     public void resetRessources(){
-        this.karotten = karotten;  // to do how does inti Ressource data from Spiellogik get in here?
-        this.salate = 3;
+        this.karotten = Config.initKarotten[0];  // to do how does inti Ressource data from Spiellogik get in here?
+        this.salate = Config.initSalate;
     }
 
 
@@ -54,5 +59,9 @@ public class Spieler {
 
     public int getKarotten() {
         return this.karotten;
+    }
+
+    public String getName(){
+        return this.name;
     }
 }

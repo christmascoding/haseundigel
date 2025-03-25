@@ -1,4 +1,4 @@
-package src;
+package src.model;
 
 public interface Config {
 

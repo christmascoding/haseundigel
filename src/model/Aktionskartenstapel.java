@@ -1,10 +1,9 @@
-package src;
+package src.model;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -25,7 +24,7 @@ public class Aktionskartenstapel {
 
         try {
             // JSON-Datei laden
-            String content = new String(Files.readAllBytes(Path.of("src/Aktionskarten.json")));
+            String content = new String(Files.readAllBytes(Path.of("src/model/Aktionskarten.json")));
 
             // JSON-Array parsen
             JSONArray jsonArray = new JSONArray(content);
