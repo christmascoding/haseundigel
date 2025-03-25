@@ -19,30 +19,31 @@ public class MainWindow extends Application {
     public int guiFieldWidth = 1280;
     public int guiFieldHeight = 720;
     GUICoordinateTable coordinateTable = new GUICoordinateTable();
-    private List<Coordinate> coordinates = coordinateTable.getCoordinateTable();//coord list from other class
+    private List<Coordinate> coordinates = coordinateTable.getCoordinateTable();
+
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("Hase und Igel");
 
-        //spielbrettle
+        // Spielfeld-Bild
         ImageView boardImage = new ImageView(new Image("file:src/assets/spielbrett.jpg"));
         boardImage.setPreserveRatio(true);
         boardImage.setFitWidth(guiFieldWidth);
         boardImage.setFitHeight(guiFieldHeight);
 
-        // center board (THIS DONT WORK)
-        double xOffset = (guiFieldWidth - boardImage.getFitWidth()) / 2;
-        double yOffset = (guiFieldHeight - boardImage.getFitHeight()) / 2;
-
-        //pane containing the manually positioned fields n shit
+        // Spielfeld-Container (Pane für exakte Positionierung)
         Pane boardPane = new Pane();
+        boardPane.setMinSize(guiFieldWidth, guiFieldHeight);
         boardPane.getChildren().add(boardImage);
-        boardImage.setLayoutX(xOffset);
-        boardImage.setLayoutY(yOffset);
 
-        displayFields(boardPane, boardImage);
+        // Felder-Container (bleibt genau über dem Bild)
+        Pane fieldPane = new Pane();
+        fieldPane.setMinSize(guiFieldWidth, guiFieldHeight);
+        boardPane.getChildren().add(fieldPane);
 
-        // player UI on lower screen
+        displayFields(fieldPane, boardImage);
+
+        // UI unten
         HBox playerUI = new HBox(20);
         playerUI.setAlignment(Pos.CENTER);
         playerUI.setStyle("-fx-background-color: #f4f4f4; -fx-padding: 20px;");
@@ -59,62 +60,54 @@ public class MainWindow extends Application {
 
         Scene scene = new Scene(root, 1920, 1080);
 
-        //resize update thingy if it fails -> probs dont need this
-        scene.widthProperty().addListener((obs, oldVal, newVal) -> updateFieldPositions(boardPane, boardImage));
-        scene.heightProperty().addListener((obs, oldVal, newVal) -> updateFieldPositions(boardPane, boardImage));
+        // Listener für Fenstergrößenänderung
+        scene.widthProperty().addListener((obs, oldVal, newVal) -> updateFieldPositions(fieldPane, boardImage));
+        scene.heightProperty().addListener((obs, oldVal, newVal) -> updateFieldPositions(fieldPane, boardImage));
 
         primaryStage.setScene(scene);
         primaryStage.show();
     }
 
-    //display field
     private void displayFields(Pane pane, ImageView boardImage) {
-        double imgWidth = boardImage.getFitWidth();
-        double imgHeight = boardImage.getFitHeight();
-        // for each field, SET IT!
         for (Coordinate coordinate : coordinates) {
             double relX = (double) coordinate.x() / 2892;
             double relY = (double) coordinate.y() / 2184;
 
-            Rectangle field = new Rectangle(20, 20);  // px size for field here, will need readjusting
+            Rectangle field = new Rectangle(20, 20);
             field.setFill(Color.TRANSPARENT);
-            field.setStroke(Color.BLACK); //black stroke
-
-            field.setUserData(new double[]{relX, relY});  //save relative position
+            field.setStroke(Color.BLACK);
+            field.setUserData(new double[]{relX, relY});
             pane.getChildren().add(field);
         }
 
         updateFieldPositions(pane, boardImage);
     }
 
-    // call when update fields
     private void updateFieldPositions(Pane pane, ImageView boardImage) {
-        double imgWidth = boardImage.getFitWidth();
-        double imgHeight = boardImage.getFitHeight();
+        double imgWidth = boardImage.getBoundsInParent().getWidth();
+        double imgHeight = boardImage.getBoundsInParent().getHeight();
 
-        // center field hopefully
-        double offsetX = (guiFieldWidth - imgWidth) / 2;
-        double offsetY = (guiFieldHeight - imgHeight) / 2;
-
-        boardImage.setLayoutX(offsetX);
-        boardImage.setLayoutY(offsetY);
-
-        // relative coords calculation (adjusting coordinates from the guicoordtable)
+        // Felder genau auf das Bild anpassen
         for (var node : pane.getChildren()) {
             if (node instanceof Rectangle field) {
                 double[] relPos = (double[]) field.getUserData();
-                field.setLayoutX(offsetX + imgWidth * relPos[0] - field.getWidth() / 2);
-                field.setLayoutY(offsetY + imgHeight * relPos[1] - field.getHeight() / 2);
+                field.setLayoutX(imgWidth * relPos[0] - field.getWidth() / 2);
+                field.setLayoutY(imgHeight * relPos[1] - field.getHeight() / 2);
             }
         }
     }
-
 
     public static void main(String[] args) {
         launch(args);
     }
 
-    private void switchToNextPlayer() {
-        // Hier rein was passiert, wenn der nächste Spieler am Zug ist
+    public void movePlayerToField(Player p, int fieldID){
+
     }
 }
+
+/**
+ * Feld für Spielermitteilungen
+ * Funktionen für GUI-Steuerung
+ * Calls an das Backend
+ */
