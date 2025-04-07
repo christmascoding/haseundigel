@@ -132,17 +132,17 @@ public class MainWindow extends Application {
 
     /**
      * Wird aufgerufen, wenn der User den nächsten Zug über einen Knopf betätigt
-     */
+     */ // to do - beachte MVC, GUI darf nicht direkt etwas ändern: eigentlich Pause drücken -> Controller -> Model: "okay, ja gehe in pause" -> Controller -> update GUI
     private void endTurn(){
         showPauseScreen(true);
     }
 
     /**
      * Wird aufgerufen, wenn der User den nächsten Zug beginnen möchte (in der Pause)
-     */
+     */ // to do - auch hier -> MVC
     private void beginTurn(){
         showPauseScreen(false);
-        //Abfrage, ob der Spieler sich auf einem Karrotten- bzw. Salatfeld befindet, falls das der Fall ist, die jeweiligen Knöpfe einblenden
+        //Contorller: Abfrage, ob der Spieler sich auf einem Karrotten- bzw. Salatfeld befindet, falls das der Fall ist, die jeweiligen Knöpfe einblenden
     }
 
     /**

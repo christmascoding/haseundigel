@@ -48,16 +48,18 @@ public class Aktionskartenstapel {
         Collections.shuffle(idList);
     }
 
-    // gibt Beschreibung der obersten Aktionskarte zurück und fügt Karte unten am Stapel wieder ein
-    public String getAktionsBeschreibung(){
-
-        String ret = cardtextList.get( idList.getFirst() ); // gebe String der obersten Karte zurück
+    // gibt id der obersten Aktionskarte zurück und fügt Karte unten am Stapel wieder ein
+    public int getAktionskartenID(){
 
         // setze Erstes Element ans ende
-        int firstElement = idList.remove(0);
+        int firstElement = idList.removeFirst();
         idList.add(firstElement);
 
-        return ret;
+        return firstElement;
 
+    }
+
+    public String getAktionsKartenBeschreibungFromID(int id){
+        return this.cardtextList.get(id);
     }
 }
