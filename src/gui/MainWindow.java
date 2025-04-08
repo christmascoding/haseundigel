@@ -13,7 +13,10 @@ import javafx.scene.shape.Rectangle;
 import src.model.SpielLogik;
 import src.model.Spieler;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import javafx.stage.StageStyle;
 
 public class MainWindow extends Application {
 
@@ -31,11 +34,16 @@ public class MainWindow extends Application {
     private TextField eatCarrotInput = new TextField();
     private Button endTurnBtn = new Button("Zug beenden");
     private VBox pauseScreen = new VBox();
-
+    private Pane fieldPane = new Pane();
+    private final int playerWidth = 40;
     private HBox playerUI = new HBox(20);
+    // TEST
+    Spieler test2 = new Spieler(0, "pimmelbomber", 2, 2);
+    int testIndex = 0;
 
     @Override
     public void start(Stage primaryStage) {
+        primaryStage.initStyle(StageStyle.DECORATED);
         primaryStage.setTitle("Hase und Igel");
 
         ImageView boardImage = new ImageView(new Image("file:src/assets/spielbrett.jpg"));
@@ -47,7 +55,7 @@ public class MainWindow extends Application {
         boardPane.setMinSize(guiFieldWidth, guiFieldHeight);
         boardPane.getChildren().add(boardImage);
 
-        Pane fieldPane = new Pane();
+
         fieldPane.setMinSize(guiFieldWidth, guiFieldHeight);
         boardPane.getChildren().add(fieldPane);
         displayFields(fieldPane, boardImage);
@@ -64,10 +72,31 @@ public class MainWindow extends Application {
 
         endTurnBtn.setOnAction(e -> endTurn());
 
-        playerUI.getChildren().addAll(resourceLabel, stepInput, moveForwardBtn, moveBackwardBtn, eatCarrotInput, eatCarrotBtn, eatSaladBtn, endTurnBtn);
+        // Icons für Karotten und Salat
+        ImageView carrotIcon = new ImageView(new Image("file:src/assets/carrot.jpg"));
+        carrotIcon.setFitHeight(20);
+        carrotIcon.setFitWidth(20);
 
+        ImageView saladIcon = new ImageView(new Image("file:src/assets/salad.jpg"));
+        saladIcon.setFitHeight(20);
+        saladIcon.setFitWidth(20);
+
+        // Ressourcen Tabelle
+        GridPane resourceTable = new GridPane();
+        resourceTable.setHgap(10);
+        resourceTable.setVgap(5);
+        resourceTable.add(new Label("Karotten:"), 0, 0);
+        resourceTable.add(new Label("Salat:"), 0, 1);
+        resourceTable.add(new Label("5"), 1, 0);  // Platzhalterwert
+        resourceTable.add(new Label("3"), 1, 1);
+        resourceTable.add(carrotIcon, 2, 0);
+        resourceTable.add(saladIcon, 2, 1);
+
+        playerUI.getChildren().addAll(resourceTable, stepInput, moveForwardBtn, moveBackwardBtn, eatCarrotInput, eatCarrotBtn, eatSaladBtn, endTurnBtn);
+
+        // Pausenbildschirm unter dem Spielfeld, aber über der Spielerleiste
         pauseScreen.setAlignment(Pos.CENTER);
-        pauseScreen.setVisible(false);
+        pauseScreen.setVisible(true);
         Button startTurnBtn = new Button("Zug beginnen");
         startTurnBtn.setOnAction(e -> beginTurn());
         pauseScreen.getChildren().add(startTurnBtn);
@@ -75,27 +104,86 @@ public class MainWindow extends Application {
         BorderPane root = new BorderPane();
         root.setCenter(boardPane);
         root.setBottom(playerUI);
-        root.setBottom(pauseScreen);
+        //root.setTop(pauseScreen);  // Pausenbildschirm über Spielerleiste
 
-        Scene scene = new Scene(root, 1920, 1080);
+        VBox centerBox = new VBox();
+        centerBox.getChildren().addAll(boardPane, pauseScreen);
+        root.setCenter(centerBox);
+        root.setBottom(playerUI);
+
+        Scene scene = new Scene(root, 1500, 800);
         primaryStage.setScene(scene);
         primaryStage.show();
+
+        // end turn screen
+        endTurn();
+        // TEST FUNCTIONS
+        Spieler test1 = new Spieler(0, "pimmelbomber", 2, 2);
+        Spieler test2 = new Spieler(0, "pimmelbomber", 2, 2);
+        Spieler test3 = new Spieler(0, "pimmelbomber", 2, 2);
+        Spieler test4 = new Spieler(0, "pimmelbomber", 2, 2);
+        Spieler test5 = new Spieler(0, "pimmelbomber", 2, 2);
+        Spieler test6 = new Spieler(0, "pimmelbomber", 2, 2);
+        Spieler test7 = new Spieler(0, "pimmelbomber", 2, 2);
+        Spieler test8 = new Spieler(0, "pimmelbomber", 2, 2);
+
+
+        List<Spieler> spielerles = new ArrayList<>();
+        spielerles.add(test2);
+        spielerles.add(test3);
+        spielerles.add(test1);
+        spielerles.add(test4);
+        //spielerles.add(test5);
+        //spielerles.add(test6);
+        //spielerles.add(test7);
+        //spielerles.add(test8);
+
+        primaryStage.show();
+        displayPlayersOnField(spielerles, 0);
+
+
     }
 
-    private void displayFields(Pane pane, ImageView boardImage) {
-        for (Coordinate coordinate : coordinates) {
-            double relX = (double) coordinate.x() / 2892;
-            double relY = (double) coordinate.y() / 2184;
 
+    private void displayFields(Pane pane, ImageView boardImage) {
+        double imgWidth = boardImage.getBoundsInParent().getWidth();  // Breite des Spielfeldes
+        double imgHeight = boardImage.getBoundsInParent().getHeight(); // Höhe des Spielfeldes
+
+        for (Coordinate coordinate : coordinates) {
+            double relX = (double) coordinate.x() / 2892;  // Relativkoordinate X
+            double relY = (double) coordinate.y() / 2184;  // Relativkoordinate Y
+
+            // Berechne die absolute Position im sichtbaren Bereich
+            double absX = imgWidth * relX;
+            double absY = imgHeight * relY;
+
+            // Rechteck für das Spielfeld (bleibt so wie es ist)
             Rectangle field = new Rectangle(20, 20);
             field.setFill(Color.TRANSPARENT);
             field.setStroke(Color.BLACK);
             field.setUserData(new double[]{relX, relY});
+            field.setX(absX - 10);  // Zentrieren des Rechtecks
+            field.setY(absY - 10);  // Zentrieren des Rechtecks
             pane.getChildren().add(field);
-        }
 
-        updateFieldPositions(pane, boardImage);
+            /*Igel-Bild hinzufügen
+            Image img = new Image("file:src/assets/igel.jpg");
+            ImageView piece = new ImageView(img);
+            piece.setFitWidth(30);
+            piece.setFitHeight(30);
+
+            // Setze die Position des Igel-Bildes wie das Feld
+            piece.setX(absX - piece.getFitWidth() / 2);  // Zentrieren des Bildes
+            piece.setY(absY - piece.getFitHeight() / 2); // Zentrieren des Bildes
+
+            piece.setUserData(new double[]{relX, relY});
+            pane.getChildren().add(piece);
+
+            // Setze das Bild in den Vordergrund
+            piece.toFront();*/
+        }
     }
+
 
     private void updateFieldPositions(Pane pane, ImageView boardImage) {
         double imgWidth = boardImage.getBoundsInParent().getWidth();
@@ -109,6 +197,124 @@ public class MainWindow extends Application {
             }
         }
     }
+    private void clearPlayersOnField() {
+        fieldPane.getChildren().removeIf(node -> node instanceof ImageView);
+    }
+
+
+    private void displayPlayersOnField(List<Spieler> players, int fieldIndex) {
+        if (players.isEmpty()) return;
+
+        // Hole die Koordinaten des aktuellen Feldes
+        Coordinate fieldCoords = coordinateTable.getCoordinateTable().get(fieldIndex);
+        double relX = (double) fieldCoords.x() / 2892;
+        double relY = (double) fieldCoords.y() / 2184;
+
+        // Berechne die absolute Position des Feldes
+        double imgWidth = fieldPane.getWidth();  // Breite des Spielfeldes
+        double imgHeight = fieldPane.getHeight(); // Höhe des Spielfeldes
+        double absX = imgWidth * relX;
+        double absY = imgHeight * relY;
+
+        // Wenn mehr als 2 Spieler vorhanden sind, runde Anordnung
+        if (players.size() >= 2) {
+            // Verringere den Radius, um die Spieler näher zusammenzubringen
+            double radius = 20; // Kleineren Radius verwenden, um Spieler näher zu positionieren
+            double angleStep = 2 * Math.PI / players.size(); // Der Abstand zwischen den Spielern im Kreis
+
+            // Iteriere über alle Spieler und setze ihre Position auf dem Kreis
+            for (int i = 0; i < players.size(); i++) {
+                Spieler p = players.get(i);
+
+                // Lade das Bild für den Spieler (Igel)
+                Image img;
+                try {
+                    img = new Image("file:src/assets/igel.jpg");
+                    if (img.isError()) {
+                        System.out.println("FEHLER: Bild konnte nicht geladen werden.");
+                        continue;
+                    }
+                } catch (Exception e) {
+                    System.out.println("FEHLER: Ausnahme beim Laden des Bildes.");
+                    continue;
+                }
+
+                ImageView piece = new ImageView(img);
+                piece.setFitWidth(playerWidth / 1.5);
+                piece.setFitHeight(playerWidth / 1.5);
+
+                // Berechne die Position jedes Spielers im Kreis
+                double angle = angleStep * i; // Der aktuelle Winkel für den Spieler
+                double offsetX = radius * Math.cos(angle); // X-Offset basierend auf dem Winkel
+                double offsetY = radius * Math.sin(angle); // Y-Offset basierend auf dem Winkel
+
+                // Setze die Position des Igels auf dem Kreis um das Feld
+                piece.setX(absX + offsetX - 15);  // Zentriere das Bild und setze den X-Offset
+                piece.setY(absY + offsetY - 15);  // Zentriere das Bild und setze den Y-Offset
+
+                // Korrektur, um die Position der Spielfigur nach oben links zu verschieben
+                int korrekturX = 15;
+                int korrekturY = -15;
+
+                piece.setX(piece.getX() - korrekturX);
+                piece.setY(piece.getY() - korrekturY);
+
+                // Das Bild in den Vordergrund setzen
+                piece.toFront();
+
+                // Füge das Spielfigur-Bild zum Pane hinzu
+                fieldPane.getChildren().add(piece);
+            }
+        } else {
+            // Anordnung wie vorher, wenn weniger als oder genau 2 Spieler
+            for (int i = 0; i < players.size(); i++) {
+                Spieler p = players.get(i);
+
+                // Lade das Bild für den Spieler (Igel)
+                Image img;
+                try {
+                    img = new Image("file:src/assets/igel.jpg");
+                    if (img.isError()) {
+                        System.out.println("FEHLER: Bild konnte nicht geladen werden.");
+                        continue;
+                    }
+                } catch (Exception e) {
+                    System.out.println("FEHLER: Ausnahme beim Laden des Bildes.");
+                    continue;
+                }
+
+                ImageView piece = new ImageView(img);
+                piece.setFitWidth(playerWidth);
+                piece.setFitHeight(playerWidth);
+
+                // igelkorrektur
+                int korrekturX = 30;
+                int korrekturY = -15;
+
+                // Setze die Position des Igels relativ zum Feld, sodass der Igel zentriert wird
+                piece.setX(absX - korrekturX);  // Zentriere auf dem Feld
+                piece.setY(absY - korrekturY);  // Zentriere auf dem Feld
+
+                // Das Bild in den Vordergrund setzen
+                piece.toFront();
+
+                // Füge das Spielfigur-Bild zum Pane hinzu
+                fieldPane.getChildren().add(piece);
+            }
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 
     public static void main(String[] args) {
         launch(args);
@@ -135,6 +341,8 @@ public class MainWindow extends Application {
      */
     private void endTurn(){
         showPauseScreen(true);
+        testIndex++;
+        displayPlayersOnField(Collections.singletonList(test2), testIndex);
     }
 
     /**
@@ -150,11 +358,8 @@ public class MainWindow extends Application {
      * @param state True falls angezeigt werden soll, bei false ist es ausgegraut
      */
     private void showEatCarrot(boolean state){
-        if(state){
-
-        }else{
-
-        }
+        eatCarrotBtn.setDisable(!state);
+        eatCarrotInput.setDisable(!state);
     }
 
     /**
@@ -162,17 +367,17 @@ public class MainWindow extends Application {
      * @param state True falls angezeigt werden soll, bei false ist es ausgegraut
      */
     private void showEatSalad(boolean state){
-        if(state){
-
-        }else{
-
-        }
+        eatSaladBtn.setDisable(!state);
     }
     /**
      * Wird aufgerufen, wenn der Spieler nichts mehr machen kann (wenn sein Zug vollendet ist, dann kann er nur noch seinen Zug beenden mit dem Zug Beenden button)
      */
-    private void grayOutButtons(){
-
+    private void grayOutButtons(boolean state){
+        moveForwardBtn.setDisable(!state);
+        moveBackwardBtn.setDisable(!state);
+        eatCarrotBtn.setDisable(!state);
+        eatSaladBtn.setDisable(!state);
+        endTurnBtn.setDisable(!state);
     }
 
     /**
@@ -181,9 +386,10 @@ public class MainWindow extends Application {
      * @param state true, wenn Pausescreen angezeigt werden soll
      */
     private void showPauseScreen(boolean state){
-        Spieler nächsterSpieler = null; //TODO
-        nächsterSpieler.getName();
-
+        //Spieler nächsterSpieler = null; //TODO
+        //nächsterSpieler.getName();
+        pauseScreen.setVisible(state);
+        playerUI.setVisible(!state);
     }
 
     /*
