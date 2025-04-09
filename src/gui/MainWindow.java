@@ -15,7 +15,6 @@ import src.model.SpielLogik;
 import src.model.Spieler;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import javafx.stage.StageStyle;
 
@@ -26,7 +25,7 @@ public class MainWindow extends Application {
     GUICoordinateTable coordinateTable = new GUICoordinateTable();
     private List<Coordinate> coordinates = coordinateTable.getCoordinateTable();
 
-    private Label resourceLabel = new Label("Ressourcen: 5 Karotten, 3 Salat");
+    //private Label resourceLabel = new Label("Ressourcen: 5 Karotten, 3 Salat");
     private TextField stepInput = new TextField();
     private Button moveForwardBtn = new Button("Vorwärts");
     private Button moveBackwardBtn = new Button("Rückwärts");
@@ -38,21 +37,29 @@ public class MainWindow extends Application {
     private Pane fieldPane = new Pane();
     private final int playerWidth = 40;
     private HBox playerUI = new HBox(20);
-    private Controller controller;
+    private Controller controller = new Controller();
     private SpielLogik logik;
+    GridPane resourceTable = new GridPane();
+    Label karrottenLabel = new Label("0");
+    Label salateLabel = new Label("0");
+
     // TEST
 
     @Override
     public void start(Stage primaryStage) {
+
         primaryStage.initStyle(StageStyle.DECORATED);
         primaryStage.setTitle("Hase und Igel");
+
         // selection screen
         PlayerSelectionScreen selectionScreen = new PlayerSelectionScreen();
         selectionScreen.showAndWait();
         logik = new SpielLogik();
         logik.addPlayers(selectionScreen.getPlayers());
+        logik.setConfigMorePlayers();
+        logik.setStartRsrctoPlayers();
 
-
+        // create Spielbrett
         ImageView boardImage = new ImageView(new Image("file:src/assets/spielbrett.jpg"));
         boardImage.setPreserveRatio(true);
         boardImage.setFitWidth(guiFieldWidth);
@@ -89,15 +96,16 @@ public class MainWindow extends Application {
         saladIcon.setFitWidth(20);
 
         // Ressourcen Tabelle
-        GridPane resourceTable = new GridPane();
+
         resourceTable.setHgap(10);
         resourceTable.setVgap(5);
         resourceTable.add(new Label("Karotten:"), 0, 0);
         resourceTable.add(new Label("Salat:"), 0, 1);
-        resourceTable.add(new Label("5"), 1, 0);  // Platzhalterwert
-        resourceTable.add(new Label("3"), 1, 1);
+        resourceTable.add(karrottenLabel, 1, 0);  // Platzhalterwert
+        resourceTable.add(salateLabel, 1, 1);
         resourceTable.add(carrotIcon, 2, 0);
         resourceTable.add(saladIcon, 2, 1);
+
 
         playerUI.getChildren().addAll(resourceTable, stepInput, moveForwardBtn, moveBackwardBtn, eatCarrotInput, eatCarrotBtn, eatSaladBtn, endTurnBtn);
 
@@ -124,19 +132,13 @@ public class MainWindow extends Application {
 
         // end turn screen
         endTurn();
-        // TEST FUNCTIONS
-        Spieler test1 = new Spieler( "pimmelbomber", 2, 2, new Image("file:src/assets/igel.jpg"));
-
-
-        List<Spieler> spielerles = new ArrayList<>();
-        spielerles.add(test1);
         //spielerles.add(test5);
         //spielerles.add(test6);
         //spielerles.add(test7);
         //spielerles.add(test8);
 
         primaryStage.show();
-        displayPlayersOnField(spielerles, 0);
+        //displayPlayersOnField(spielerles, 0);
 
 
     }
@@ -358,6 +360,9 @@ public class MainWindow extends Application {
      */ // to do - auch hier -> MVC
     private void beginTurn(){
         showPauseScreen(false);
+        updatePlayerGUI();
+        //logik.playRound();
+
         //Contorller: Abfrage, ob der Spieler sich auf einem Karrotten- bzw. Salatfeld befindet, falls das der Fall ist, die jeweiligen Knöpfe einblenden
     }
 
@@ -407,20 +412,19 @@ public class MainWindow extends Application {
     */
 
     /**
-     * Aktualisiert die GUI mit den Spielerressourcen
-     * @param p Spieler, dessen Ressourcen angezeigt werden sollen
+     * Aktualisiert die GUI mit den Spielerressourcen mit dem nächsten Spieler, der am Zug ist
      */
-    private void updatePlayerGUI(Spieler p) {
-        resourceLabel.setText("Ressourcen: " + p.getKarotten() + " Karotten, " + p.getSalate() + " Salat");
+    private void updatePlayerGUI() {
+        Spieler current = this.logik.getCurrentPlayer();
+        resourceTable.getChildren().remove(karrottenLabel);
+        resourceTable.getChildren().remove(salateLabel);
+        karrottenLabel = new Label(String.valueOf(current.getKarotten()));
+        salateLabel = new Label(String.valueOf(current.getSalate()));
+        resourceTable.add(karrottenLabel, 1, 0);  // Platzhalterwert
+        resourceTable.add(salateLabel, 1, 1);
     }
 
-    /**
-     * Setzt den Spieler, der gerade am Zug ist
-     * @param p Spieler, der am Zug ist
-     */
-    public void changePlayerAtTurn(Spieler p) {
-        updatePlayerGUI(p);
-    }
+
 
     /**
      * Zeigt dem Spieler eine Karte an, sobald er eine gezogen hat

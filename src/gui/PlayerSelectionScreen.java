@@ -95,7 +95,7 @@ public class PlayerSelectionScreen {
             if (!spielerMap.containsKey(name)) {
                 int imageIndex = selectedImageIndex;
                 Image image = loadedImages[imageIndex];
-                Spieler spieler = new Spieler(name, 68, 3, image);
+                Spieler spieler = new Spieler(name, image);
                 spielerMap.put(name, spieler);
                 usedImages.add(imageIndex);
                 playerListView.getItems().add(name);
@@ -127,7 +127,9 @@ public class PlayerSelectionScreen {
 
         Button doneButton = new Button("Fertig");
         doneButton.setOnAction(e -> {
-            stage.close();
+            if(spielerMap.values().size() >= 2){
+                stage.close();
+            }
         });
 
         HBox buttonRow = new HBox(10, addButton, removeButton, doneButton);

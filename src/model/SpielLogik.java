@@ -1,15 +1,12 @@
 package src.model;
 
-import javafx.geometry.Pos;
-
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 import javafx.scene.image.Image;
 
 public class SpielLogik implements Config{
 
-    private final int configMorePlayers = 0; // to do configures 1 for enough players
+    private int configMorePlayers = 0; // configures 1 for more than 4 players
 
     private int indexCtr; // zählt mit wer dran ist
 
@@ -29,37 +26,18 @@ public class SpielLogik implements Config{
 
         // to do -> interaction with GUI to add players
 
-        /*
-        // test with 2 players
-        this.mitspieler.add(new Spieler("Spieler Da", initKarotten[0], 0, testimage));
-        this.mitspieler.add(new Spieler("Spieler Kl", initKarotten[0], initSalate, testimage));
-        */
-
-        // to remove - testing position methods
-        this.mitspieler.add(new Spieler("Spieler 1", initKarotten[0], initSalate, testimage));
-        this.mitspieler.add(new Spieler("Spieler 2", initKarotten[0], initSalate, testimage));
-        this.mitspieler.add(new Spieler("Spieler 3", initKarotten[0], initSalate, testimage));
-        //this.mitspieler.add(new Spieler("Spieler 4", 10, initSalate, testimage));
-        //this.mitspieler.add(new Spieler("Spieler 5", initKarotten[0], initSalate, testimage));
-        //this.mitspieler.add(new Spieler("Spieler 6", initKarotten[0], initSalate, testimage));
 
         this.aktionsKartenStapel = new Aktionskartenstapel();
         this.aktionsKartenStapel.mischen();
         this.indexCtr = 0;
     }
 
-    public void playGame(){
+    public Spieler getCurrentPlayer(){
 
-        for(int i = 0; i<128; i++){
-            playRound();
-
-            // increase counter or start from 0 again
-            this.indexCtr ++;
-            if( this.indexCtr >= this.mitspieler.size() ) this.indexCtr = 0;
-        }
+            return this.mitspieler.get(indexCtr);
 
     }
-    private void playRound(){
+    public void playRound(){
 
         Spieler roundplayer = this.mitspieler.get(this.indexCtr);
 
@@ -86,6 +64,7 @@ public class SpielLogik implements Config{
                 System.out.println("0 - Karottenfeld nutzen; sonst laufen");
                 Scanner scan = new Scanner(System.in);
                 int inp = scan.nextInt();
+                
 
                 // KarottenFeld nutzen
                 if( inp == 0 ){
@@ -217,7 +196,7 @@ public class SpielLogik implements Config{
             if( roundplayer.getKarotten() == 0 ){
 
                 System.out.println(" Keine Karotten mehr -> Zurück an Start + Resrc reset");
-                roundplayer.resetRessources();
+                roundplayer.resetRessources(this.configMorePlayers);
                 roundplayer.moveToField(0, this.platzierungsliste.size());
 
             }
@@ -279,6 +258,9 @@ public class SpielLogik implements Config{
 
         }while(posBefore != roundplayer.getAktuelleFeldNr());
 
+        // increase counter or start from 0 again
+        this.indexCtr ++;
+        if( this.indexCtr >= this.mitspieler.size() ) this.indexCtr = 0;
 
     }
 
@@ -594,10 +576,29 @@ public class SpielLogik implements Config{
 
 
     }
+
+    /* adds Player to game - called from Playerselection screen */
     public void addPlayers(List<Spieler> spieler){
         mitspieler.addAll(spieler);
     }
 
+    /* sets Rsrc to Players in beginning of game */
+    public void setStartRsrctoPlayers(){
+
+        for(Spieler player : mitspieler){
+
+            player.resetRessources(this.configMorePlayers);
+
+        }
+    }
+
+    /* sets ConfigMorePlayers to 1 or 0, depending to number of Players in the beginning */
+    public void setConfigMorePlayers(){
+
+        if( mitspieler.size() > 4 ){
+            this.configMorePlayers = 1;
+        }
+    }
     /* Debug Output fo actual player(Field + Karotten Left)
     * */
     private void debugRoundplayerOutput(){
@@ -625,7 +626,7 @@ public class SpielLogik implements Config{
         mitspieler.get(1).eatSalate();
         mitspieler.get(1).eatSalate();
 
-        playGame();
+
 
     }
 

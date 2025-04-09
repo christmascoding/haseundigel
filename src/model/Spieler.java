@@ -21,10 +21,8 @@ public class Spieler implements Config {
     private List<PositionsFeld> posFeldListe = new ArrayList<PositionsFeld>(); // enthält nach Instanziierung alle
                                                                                 // Positionsfelder in Reihenfolge auf dem Spielbrett
 
-    public Spieler(String name, int karotten, int salate, Image playerImage) { // to do how does inti Ressource data from Spiellogik get in here?
+    public Spieler(String name, Image playerImage) { // to do how does inti Ressource data from Spiellogik get in here?
         this.name = name;
-        this.karotten = karotten;
-        this.salate = salate;
         this.nextSuspend = false;
         this.aktuelleFeldNr = 0;
         this.lastWalkedWide = 0;    // stores wide that was walked last -> fpr Aktionskarte "Letzter Zug kostet nichts"
@@ -173,8 +171,8 @@ public class Spieler implements Config {
     }
 
     // bei Zwangsrücksetzung auf Start, eines Spielers aufgerufen
-    public void resetRessources(){
-        this.karotten = initKarotten[0];  // to do how does inti Ressource data from Spiellogik get in here?
+    public void resetRessources( int configMorePlayers){
+        this.karotten = initKarotten[configMorePlayers];  // 0 or 1 for more than 4 players
         this.salate = initSalate;
     }
 
