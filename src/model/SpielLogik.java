@@ -35,10 +35,10 @@ public class SpielLogik implements Config{
         */
 
         // to remove - testing position methods
-        this.mitspieler.add(new Spieler("Spieler 1", initKarotten[0], initSalate, testimage));
-        this.mitspieler.add(new Spieler("Spieler 2", initKarotten[0], initSalate, testimage));
-        this.mitspieler.add(new Spieler("Spieler 3", initKarotten[0], initSalate, testimage));
-        //this.mitspieler.add(new Spieler("Spieler 4", 10, initSalate, testimage));
+        this.mitspieler.add(new Spieler("Tobias 1", 0, initSalate, testimage));
+        this.mitspieler.add(new Spieler("Döniel 2", initKarotten[0], initSalate, testimage));
+        this.mitspieler.add(new Spieler("Tobiäs 3", initKarotten[0], initSalate, testimage));
+        this.mitspieler.add(new Spieler("Danjell 4", initKarotten[0], initSalate, testimage));
         //this.mitspieler.add(new Spieler("Spieler 5", initKarotten[0], initSalate, testimage));
         //this.mitspieler.add(new Spieler("Spieler 6", initKarotten[0], initSalate, testimage));
 
@@ -185,46 +185,50 @@ public class SpielLogik implements Config{
                 break;
         }
 
-        // move backward?
-        System.out.println("Rückwärts auf Igelfeld? - 0 -- du "+ roundplayer.getName()+" hast noch " +roundplayer.getKarotten() +" Karotten" );
-        Scanner scan = new Scanner(System.in);
-        int inp = inp = scan.nextInt();
 
-        if( inp == 0 ){
 
-            // if valid moved backwards to Igelfeld
-            if( IgeldFeldAction() ) {
 
-                debugRoundplayerOutput();
-                return;
 
-            }
 
-        }
+        // stays in loop till player sucessful moved
 
-        // stays in loop till player sucessful moved forward
-        // to do not on Salatfeld if no Salate left
-        System.out.println("Zugweite bitte - du "+ roundplayer.getName()+" hast noch " +roundplayer.getKarotten() +" Karotten" );
-
-        //int walkwide = 1;       // input paramter - needs to come from GUI
-        int walkwide;
+        System.out.println("Zugweite bitte [0 für zurück zum letzten Igelfeld] - du "+ roundplayer.getName()+" hast noch " +roundplayer.getKarotten() +" Karotten" );
 
         int moveSuccess = -1;
 
         do{
+
+            Scanner scan = new Scanner(System.in);
+            int inp = inp = scan.nextInt();
+
+            // move backward to Igelfeld
+            if( inp == 0 ){
+
+                // if valid moved backwards to Igelfeld
+                if( IgeldFeldAction() ) {
+
+                    debugRoundplayerOutput();
+                    return;
+
+                }
+
+            }
+
             // forced to start from beginning
             if( roundplayer.getKarotten() == 0 ){
 
                 System.out.println(" Keine Karotten mehr -> Zurück an Start + Resrc reset");
                 roundplayer.resetRessources();
                 roundplayer.moveToField(0, this.platzierungsliste.size());
+                debugRoundplayerOutput();
+                return;
 
             }
 
-            inp = scan.nextInt();
-            walkwide = inp;
+            int walkwide = inp;
             moveSuccess = roundplayer.moveForward(walkwide, this.platzierungsliste.size());
 
+            // error flags
             if( moveSuccess < 0 ){
                 switch (moveSuccess){
 
@@ -251,8 +255,7 @@ public class SpielLogik implements Config{
 
             }
 
-        }while (moveSuccess != 1 && moveSuccess != 3);
-
+        }while ( moveSuccess <0  );
         // player finished
         if( moveSuccess == 3 ){
 
@@ -604,10 +607,10 @@ public class SpielLogik implements Config{
     // funct to test sth
     public void teststh(){
 
-        mitspieler.get(0).moveToField(60, this.platzierungsliste.size());
-        mitspieler.get(1).moveToField(53, this.platzierungsliste.size());
-        mitspieler.get(2).moveToField(54, this.platzierungsliste.size());
-        //mitspieler.get(3).moveToField(63);
+        mitspieler.get(0).moveToField(12, this.platzierungsliste.size());
+        mitspieler.get(1).moveToField(11, this.platzierungsliste.size());
+        mitspieler.get(2).moveToField(8, this.platzierungsliste.size());
+        mitspieler.get(3).moveToField(4, this.platzierungsliste.size());
         //mitspieler.get(4).moveToField(29);
         //mitspieler.get(5).moveToField(12);
 

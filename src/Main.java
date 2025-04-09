@@ -12,8 +12,8 @@ public class Main {
 
         SpielLogik testgame = new SpielLogik();
 
-        testgame.teststh();
-        //testgame.playGame();
+        //testgame.teststh();
+        testgame.playGame();
 
     }
 }
