@@ -10,6 +10,7 @@ import javafx.stage.Stage;
 import javafx.geometry.Pos;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import src.Controller;
 import src.model.SpielLogik;
 import src.model.Spieler;
 
@@ -37,14 +38,20 @@ public class MainWindow extends Application {
     private Pane fieldPane = new Pane();
     private final int playerWidth = 40;
     private HBox playerUI = new HBox(20);
+    private Controller controller;
+    private SpielLogik logik;
     // TEST
-    Spieler test2 = new Spieler(0, "pimmelbomber", 2, 2);
-    int testIndex = 0;
 
     @Override
     public void start(Stage primaryStage) {
         primaryStage.initStyle(StageStyle.DECORATED);
         primaryStage.setTitle("Hase und Igel");
+        // selection screen
+        PlayerSelectionScreen selectionScreen = new PlayerSelectionScreen();
+        selectionScreen.showAndWait();
+        logik = new SpielLogik();
+        logik.addPlayers(selectionScreen.getPlayers());
+
 
         ImageView boardImage = new ImageView(new Image("file:src/assets/spielbrett.jpg"));
         boardImage.setPreserveRatio(true);
@@ -118,21 +125,11 @@ public class MainWindow extends Application {
         // end turn screen
         endTurn();
         // TEST FUNCTIONS
-        Spieler test1 = new Spieler(0, "pimmelbomber", 2, 2);
-        Spieler test2 = new Spieler(0, "pimmelbomber", 2, 2);
-        Spieler test3 = new Spieler(0, "pimmelbomber", 2, 2);
-        Spieler test4 = new Spieler(0, "pimmelbomber", 2, 2);
-        Spieler test5 = new Spieler(0, "pimmelbomber", 2, 2);
-        Spieler test6 = new Spieler(0, "pimmelbomber", 2, 2);
-        Spieler test7 = new Spieler(0, "pimmelbomber", 2, 2);
-        Spieler test8 = new Spieler(0, "pimmelbomber", 2, 2);
+        Spieler test1 = new Spieler( "pimmelbomber", 2, 2, new Image("file:src/assets/igel.jpg"));
 
 
         List<Spieler> spielerles = new ArrayList<>();
-        spielerles.add(test2);
-        spielerles.add(test3);
         spielerles.add(test1);
-        spielerles.add(test4);
         //spielerles.add(test5);
         //spielerles.add(test6);
         //spielerles.add(test7);
@@ -304,6 +301,19 @@ public class MainWindow extends Application {
         }
     }
 
+    private void renderField(List<Spieler> players){
+        List<Integer> activeFields = new ArrayList<>();
+        for(int i = 0; i < coordinateTable.getCoordinateTable().size(); i++){
+            List<Spieler> spielerAufFeld = new ArrayList<>();
+            for(Spieler p : players){
+                if(p.getAktuelleFeldNr() == i){
+                    spielerAufFeld.add(p);
+                }
+            }
+        }
+
+    }
+
 
 
 
@@ -341,8 +351,6 @@ public class MainWindow extends Application {
      */ // to do - beachte MVC, GUI darf nicht direkt etwas ändern: eigentlich Pause drücken -> Controller -> Model: "okay, ja gehe in pause" -> Controller -> update GUI
     private void endTurn(){
         showPauseScreen(true);
-        testIndex++;
-        displayPlayersOnField(Collections.singletonList(test2), testIndex);
     }
 
     /**

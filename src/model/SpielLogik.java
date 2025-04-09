@@ -5,6 +5,7 @@ import javafx.geometry.Pos;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+import javafx.scene.image.Image;
 
 public class SpielLogik implements Config{
 
@@ -385,6 +386,7 @@ public class SpielLogik implements Config{
                 default:
                     System.out.println("An Error occured while creating PosFeldListe - this Position Feld type does not exist");
                     return;
+
             }
 
             posFeldListe.add(nextFeld);
@@ -591,6 +593,9 @@ public class SpielLogik implements Config{
         else System.out.println("Error no Position for actual Player was found");
 
 
+    }
+    public void addPlayers(List<Spieler> spieler){
+        mitspieler.addAll(spieler);
     }
 
     /* Debug Output fo actual player(Field + Karotten Left)
