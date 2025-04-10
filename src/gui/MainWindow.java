@@ -30,8 +30,8 @@ public class MainWindow extends Application {
     private Button moveForwardBtn = new Button("Vorwärts");
     private Button moveBackwardBtn = new Button("Rückwärts");
     private Button eatCarrotBtn = new Button("Karotten essen");
+    private Button getCarrotBtn = new Button("Karotten erhalten");
     private Button eatSaladBtn = new Button("Salat essen");
-    private TextField eatCarrotInput = new TextField();
     private Button endTurnBtn = new Button("Zug beenden");
     private VBox pauseScreen = new VBox();
     private Pane fieldPane = new Pane();
@@ -79,10 +79,11 @@ public class MainWindow extends Application {
 
         stepInput.setPrefWidth(50);
         stepInput.setPromptText("Schritte");
-        eatCarrotInput.setPrefWidth(50);
+
 
         eatCarrotBtn.setDisable(true);
         eatSaladBtn.setDisable(true);
+        getCarrotBtn.setDisable(true);
 
         endTurnBtn.setOnAction(e -> endTurn());
 
@@ -107,7 +108,7 @@ public class MainWindow extends Application {
         resourceTable.add(saladIcon, 2, 1);
 
 
-        playerUI.getChildren().addAll(resourceTable, stepInput, moveForwardBtn, moveBackwardBtn, eatCarrotInput, eatCarrotBtn, eatSaladBtn, endTurnBtn);
+        playerUI.getChildren().addAll(resourceTable, stepInput, moveForwardBtn, moveBackwardBtn, getCarrotBtn, eatCarrotBtn, eatSaladBtn, endTurnBtn);
 
         // Pausenbildschirm unter dem Spielfeld, aber über der Spielerleiste
         pauseScreen.setAlignment(Pos.CENTER);
@@ -196,6 +197,7 @@ public class MainWindow extends Application {
             }
         }
     }
+
     private void clearPlayersOnField() {
         fieldPane.getChildren().removeIf(node -> node instanceof ImageView);
     }
@@ -303,29 +305,18 @@ public class MainWindow extends Application {
         }
     }
 
-    private void renderField(List<Spieler> players){
+    private void renderField(List<Spieler> players) {
         List<Integer> activeFields = new ArrayList<>();
-        for(int i = 0; i < coordinateTable.getCoordinateTable().size(); i++){
+        for (int i = 0; i < coordinateTable.getCoordinateTable().size(); i++) {
             List<Spieler> spielerAufFeld = new ArrayList<>();
-            for(Spieler p : players){
-                if(p.getAktuelleFeldNr() == i){
+            for (Spieler p : players) {
+                if (p.getAktuelleFeldNr() == i) {
                     spielerAufFeld.add(p);
                 }
             }
         }
 
     }
-
-
-
-
-
-
-
-
-
-
-
 
 
     public static void main(String[] args) {
@@ -336,29 +327,30 @@ public class MainWindow extends Application {
     /**
      * Wird aufgerufen, wenn der Rückwärts-Knopf gedrückt wird
      */
-    private void reversePressed(){
+    private void reversePressed() {
 
     }
 
     /**
      * Wird aufgerufen, wenn der Vorwärts-Knopf gedrückt wird
+     *
      * @param amount Anzahl an Vorwärtszügen, die vollendet werden
      */
-    private void forwardPressed(int amount){
+    private void forwardPressed(int amount) {
         //notify backend
     }
 
     /**
      * Wird aufgerufen, wenn der User den nächsten Zug über einen Knopf betätigt
      */ // to do - beachte MVC, GUI darf nicht direkt etwas ändern: eigentlich Pause drücken -> Controller -> Model: "okay, ja gehe in pause" -> Controller -> update GUI
-    private void endTurn(){
+    private void endTurn() {
         showPauseScreen(true);
     }
 
     /**
      * Wird aufgerufen, wenn der User den nächsten Zug beginnen möchte (in der Pause)
      */ // to do - auch hier -> MVC
-    private void beginTurn(){
+    private void beginTurn() {
         showPauseScreen(false);
         updatePlayerGUI();
         //logik.playRound();
@@ -368,37 +360,41 @@ public class MainWindow extends Application {
 
     /**
      * Blendet einen Knopf und links davon ein Textfeld ein, um eine bestimmte Anzahl an Karrotten essen zu können
+     *
      * @param state True falls angezeigt werden soll, bei false ist es ausgegraut
      */
-    private void showEatCarrot(boolean state){
+    private void showEatCarrot(boolean state) {
         eatCarrotBtn.setDisable(!state);
-        eatCarrotInput.setDisable(!state);
     }
 
     /**
      * Blendet einen Knopf und links davon ein Textfeld ein, um eine bestimmte Anzahl an Salat essen zu können
+     *
      * @param state True falls angezeigt werden soll, bei false ist es ausgegraut
      */
-    private void showEatSalad(boolean state){
+    private void showEatSalad(boolean state) {
         eatSaladBtn.setDisable(!state);
     }
+
     /**
      * Wird aufgerufen, wenn der Spieler nichts mehr machen kann (wenn sein Zug vollendet ist, dann kann er nur noch seinen Zug beenden mit dem Zug Beenden button)
      */
-    private void grayOutButtons(boolean state){
+    private void grayOutButtons(boolean state) {
         moveForwardBtn.setDisable(!state);
         moveBackwardBtn.setDisable(!state);
         eatCarrotBtn.setDisable(!state);
         eatSaladBtn.setDisable(!state);
         endTurnBtn.setDisable(!state);
+        getCarrotBtn.setDisable(!state);
     }
 
     /**
      * Wird aufgerufen, wenn der Spieler seinen Zug beendet, und der nächste den Zug beginnen muss (damit sie sich nicht in die Möhren schauen!)
      * Diese Funktion versteckt alle Knöpfe und zeigt nur einen Knopf mit "Starte nächsten Zug" an.
+     *
      * @param state true, wenn Pausescreen angezeigt werden soll
      */
-    private void showPauseScreen(boolean state){
+    private void showPauseScreen(boolean state) {
         //Spieler nächsterSpieler = null; //TODO
         //nächsterSpieler.getName();
         pauseScreen.setVisible(state);
@@ -425,14 +421,22 @@ public class MainWindow extends Application {
     }
 
 
-
     /**
      * Zeigt dem Spieler eine Karte an, sobald er eine gezogen hat
+     *
      * @param cardText Text, der auf der Karte ist
      */
-    public void showCardText(String cardText){
+    public void showCardText(String cardText) {
 
     }
 
+    /**
+     * Schaltet den "Karotten erhalten" Knopf ein und aus
+     * @param state true, wenn der Knopf sichtbar sein soll
+     */
+    public void showGetCarrotBtn(boolean state) {
+        getCarrotBtn.setDisable(!state);
+    }
 
 }
+
