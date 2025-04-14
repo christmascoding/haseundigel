@@ -20,6 +20,12 @@ import javafx.stage.StageStyle;
 
 public class MainWindow extends Application {
 
+    private static MainWindow instance;
+
+    public MainWindow(){
+        instance = this;
+    }
+
     public int guiFieldWidth = 1280;
     public int guiFieldHeight = 720;
     GUICoordinateTable coordinateTable = new GUICoordinateTable();
@@ -42,6 +48,10 @@ public class MainWindow extends Application {
     GridPane resourceTable = new GridPane();
     Label karrottenLabel = new Label("0");
     Label salateLabel = new Label("0");
+    private InputFormat inputs = new InputFormat(0, false, false, false, false, false);
+
+
+
 
     // TEST
 
@@ -86,6 +96,7 @@ public class MainWindow extends Application {
         getCarrotBtn.setDisable(true);
 
         endTurnBtn.setOnAction(e -> endTurn());
+        moveForwardBtn.setOnAction(e -> triggerMoveForward());
 
         // Icons für Karotten und Salat
         ImageView carrotIcon = new ImageView(new Image("file:src/assets/carrot.jpg"));
@@ -202,7 +213,13 @@ public class MainWindow extends Application {
         fieldPane.getChildren().removeIf(node -> node instanceof ImageView);
     }
 
+    /**
+     * Resets all Inputs
+     */
+    private void resetInputs(){
+        inputs = new InputFormat(0, false, false, false, false, false);
 
+    }
     private void displayPlayersOnField(List<Spieler> players, int fieldIndex) {
         if (players.isEmpty()) return;
 
@@ -353,7 +370,7 @@ public class MainWindow extends Application {
     private void beginTurn() {
         showPauseScreen(false);
         updatePlayerGUI();
-        //logik.playRound();
+        logik.playRound();
 
         //Contorller: Abfrage, ob der Spieler sich auf einem Karrotten- bzw. Salatfeld befindet, falls das der Fall ist, die jeweiligen Knöpfe einblenden
     }
@@ -437,6 +454,30 @@ public class MainWindow extends Application {
     public void showGetCarrotBtn(boolean state) {
         getCarrotBtn.setDisable(!state);
     }
+
+    public int getWalkwide(){
+        while(!inputs.isWalkForwardPressed()){
+            //idle thread
+        }
+        resetInputs();
+        stepInput.getCharacters();
+        return Integer.parseInt(String.valueOf(stepInput.getCharacters()));
+    }
+
+    private void triggerMoveForward(){
+        //button action
+        inputs.setWalkForwardPressed(true);
+    }
+
+    /**
+     * Returns the instance of the MainWindow
+     * @return
+     */
+    public static MainWindow getInstance() {
+        return instance;
+    }
+
+
 
 }
 
