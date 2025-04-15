@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.List;
 import javafx.scene.image.Image;
 import src.Controller;
+import src.gui.MainWindow;
 
 public class SpielLogik implements Config, Runnable{
 
@@ -178,8 +179,8 @@ public class SpielLogik implements Config, Runnable{
 
         // move backward?
         System.out.println("Rückwärts auf Igelfeld? - 0 -- du "+ roundplayer.getName()+" hast noch " +roundplayer.getKarotten() +" Karotten" );
-        Scanner scan = new Scanner(System.in);
-        int inp = inp = scan.nextInt();
+
+        int inp = MainWindow.getInstance().getWalkwide();
 
         if( inp == 0 ){
 
@@ -190,9 +191,7 @@ public class SpielLogik implements Config, Runnable{
                 return;
 
             }
-
         }
-
         // stays in loop till player sucessful moved forward
         // to do not on Salatfeld if no Salate left
         System.out.println("Zugweite bitte - du "+ roundplayer.getName()+" hast noch " +roundplayer.getKarotten() +" Karotten" );
@@ -212,7 +211,7 @@ public class SpielLogik implements Config, Runnable{
 
             }
 
-            inp = scan.nextInt();
+            inp = MainWindow.getInstance().getWalkwide();
             walkwide = inp;
             moveSuccess = roundplayer.moveForward(walkwide, this.platzierungsliste.size());
 
@@ -394,9 +393,9 @@ public class SpielLogik implements Config, Runnable{
     }
 
 
-    // to do replace locationID with this.mitspieler.get(this.indexCtr).getAktuellesFeld() ?
-    // returned index des nächsten Positionsfeldes eines bestimmten types, existiert kein Folgendes mehr,
-    // so wird die eingegebene ID returned
+    /** to do replace locationID with this.mitspieler.get(this.indexCtr).getAktuellesFeld() ?
+    * returned index des nächsten Positionsfeldes eines bestimmten types, existiert kein Folgendes mehr,
+     * so wird die eingegebene ID returned */
     private int findNextField(int locationID, PositionsFeld type){
 
         // list with all elements from nextField till Ziel
@@ -416,9 +415,9 @@ public class SpielLogik implements Config, Runnable{
 
     }
 
-    /* tries to move actual player on prev. Igelfeld -> if it is occupied by other player; the Igelfeld before ....
+    /** tries to move actual player on prev. Igelfeld -> if it is occupied by other player; the Igelfeld before ....
     * if no preveious Igelfeld is free -> it is not allowed to move backwards
-    */
+    **/
     private boolean IgeldFeldAction(){
 
         Spieler roundplayer = this.mitspieler.get(indexCtr);
@@ -448,8 +447,9 @@ public class SpielLogik implements Config, Runnable{
         }
 
     }
-    // returned index des vorherigen Positionsfeldes eines bestimmten types, existiert kein vorheriges,
-    // so wird die eingegebene ID returned
+
+    /** returned index des vorherigen Positionsfeldes eines bestimmten types, existiert kein vorheriges,
+     so wird die eingegebene ID returned **/
     private int findPrevField(int locationID, PositionsFeld type){
 
         // list with all elements from Start till ID
@@ -469,7 +469,7 @@ public class SpielLogik implements Config, Runnable{
 
     }
 
-    // returned Positionen des Spielers der an der Reihe ist
+    /**returned Positionen des Spielers der an der Reihe ist **/
     private ArrayList<Integer> getPosition (){
 
         List <Spieler> sortMitspieler = new ArrayList<>(this.mitspieler); // Kopie -> original unverändert
@@ -494,7 +494,7 @@ public class SpielLogik implements Config, Runnable{
     }
 
 
-    /* returns FeldNr+1 of player next before actual player, or own FeldNr if actual player is first one
+    /** returns FeldNr+1 of player next before actual player, or own FeldNr if actual player is first one
     * can only be called safely when getPosition returned ArrayList with length 1 -> Player is on a field alone
     * */
     private int getFieldFrontPlayer (){
@@ -516,7 +516,7 @@ public class SpielLogik implements Config, Runnable{
 
     }
 
-    /* returns FeldNr+1 of player next behind actual player, or own FeldNr if actual player is last one
+    /** returns FeldNr+1 of player next behind actual player, or own FeldNr if actual player is last one
      * can only be called safely when getPosition returned ArrayList with length 1 -> Player is on a field alone
      * */
     private int getFieldBackPlayer (){
@@ -537,7 +537,7 @@ public class SpielLogik implements Config, Runnable{
 
     }
 
-    /* returns True if a given FieldID is not occupied by a Player*/
+    /** returns True if a given FieldID is not occupied by a Player*/
     private boolean fieldisNotOccupied(int locationID){
 
         for(Spieler spieler : this.mitspieler){
@@ -547,7 +547,8 @@ public class SpielLogik implements Config, Runnable{
 
         return true;
     }
-    /* moved Spieler, der an der Reihe ist, eine Position nach vorne oder nach hinten
+
+    /** moved Spieler, der an der Reihe ist, eine Position nach vorne oder nach hinten
     *  1 für nach vorne
     * -1 für nach hinten
     * Edge Cases:
@@ -588,12 +589,12 @@ public class SpielLogik implements Config, Runnable{
 
     }
 
-    /* adds Player to game - called from Playerselection screen */
+    /** adds Player to game - called from Playerselection screen */
     public void addPlayers(List<Spieler> spieler){
         mitspieler.addAll(spieler);
     }
 
-    /* sets Rsrc to Players in beginning of game */
+    /** sets Rsrc to Players in beginning of game */
     public void setStartRsrctoPlayers(){
 
         for(Spieler player : mitspieler){
@@ -603,14 +604,14 @@ public class SpielLogik implements Config, Runnable{
         }
     }
 
-    /* sets ConfigMorePlayers to 1 or 0, depending to number of Players in the beginning */
+    /** sets ConfigMorePlayers to 1 or 0, depending to number of Players in the beginning */
     public void setConfigMorePlayers(){
 
         if( mitspieler.size() > 4 ){
             this.configMorePlayers = 1;
         }
     }
-    /* Debug Output fo actual player(Field + Karotten Left)
+    /** Debug Output fo actual player(Field + Karotten Left)
     * */
     private void debugRoundplayerOutput(){
 
@@ -618,6 +619,7 @@ public class SpielLogik implements Config, Runnable{
 
     }
 
+    /** funct to test sth */
     /**
      * Sets the controller for this SpielLogik Model
      * @param ctrl controller class
