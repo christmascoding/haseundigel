@@ -57,6 +57,7 @@ public class MainWindow extends Application {
 
         primaryStage.initStyle(StageStyle.DECORATED);
         primaryStage.setTitle("Hase und Igel");
+        // riegel
 
         // selection screen
         PlayerSelectionScreen selectionScreen = new PlayerSelectionScreen();
