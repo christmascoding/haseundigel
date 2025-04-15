@@ -182,10 +182,10 @@ public class SpielLogik implements Config, Runnable{
 
         int inp = MainWindow.getInstance().getWalkwide();
 
-        if( inp == 0 ){
+        if( inp == 0 ) {
 
             // if valid moved backwards to Igelfeld
-            if( IgeldFeldAction() ) {
+            if (IgeldFeldAction()) {
 
                 debugRoundplayerOutput();
                 return;
