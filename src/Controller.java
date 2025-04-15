@@ -1,24 +1,57 @@
 package src;
 
+import src.gui.MainWindow;
+import src.model.SpielLogik;
 import src.model.Spieler;
+
+import java.util.concurrent.Semaphore;
 
 public class Controller {
 
-
-    //functions to control GUI
-    private void showEndTurnScreen(Spieler nächsterSpieler){
-
-    }
-    private void showTurnOptions(Spieler derzeitigerSpieler){
-
-    }
-    //functions called by the GUI
+    public boolean gameActive;
     /**
-     * GUI fragt hier, ob der Zug beendet werden kann (Knopf wird gedrückt)
-     * @return true wenn erlaubt, false wenn nicht erlaubt
+     * The playerSelectionLock Semaphore is used once per game.
+     * It gets acquired by the logic before the logic starts
+     * and is freed by the game after the playerSelectionScreen is closed.
      */
-    public boolean endTurnCalled(){
-        //hier spiellogike benachrichtigen
-        return true;
+    public Semaphore playerSelectionLock = new Semaphore(1);
+    /**
+     * The startTurnLock is used once per turn.
+     * It gets acquired by the logic before the logic triggers the GUI to update the player statistics.
+     * After it's freed by the GUI by a press of the "Start turn" button, the logic can update
+     * the player stats in the GUI.
+     */
+    public Semaphore startTurnLock = new Semaphore(1);
+    /**
+     * The logicInputReadyLock is acquired by the GUI to make sure the logic is done with any calculations before it's ready to wait for player input.
+     * It gets freed by the logic after it can start waiting for Input
+     */
+    public Semaphore logicInputReadyLock = new Semaphore(1);
+    /**
+     * This lock is acquired by the logic when it expects an input by the GUI.
+     * After this is released by the GUI, the logic will check if the input is valid
+     * and will re-acquire(lock) it as long as the inputs are invalid
+     */
+    public Semaphore waitForInputLock = new Semaphore(1);
+
+    private SpielLogik logik;
+    private MainWindow mainWindow;
+
+    public Controller(SpielLogik logik, MainWindow mainWindow){
+        this.logik = logik;
+        this.mainWindow = mainWindow;
+        gameActive = false;
     }
+
+    /**
+     * Funktion die zum Spielstart aufgerufen wird
+     */
+    public void start(){
+        gameActive = true;
+        Thread logikThread = new Thread(logik);
+        logikThread.start();
+
+    }
+
+
 }

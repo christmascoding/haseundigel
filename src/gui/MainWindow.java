@@ -20,6 +20,12 @@ import javafx.stage.StageStyle;
 
 public class MainWindow extends Application {
 
+    private static MainWindow instance;
+
+    public MainWindow(){
+        instance = this;
+    }
+
     public int guiFieldWidth = 1280;
     public int guiFieldHeight = 720;
     GUICoordinateTable coordinateTable = new GUICoordinateTable();
@@ -37,11 +43,12 @@ public class MainWindow extends Application {
     private Pane fieldPane = new Pane();
     private final int playerWidth = 40;
     private HBox playerUI = new HBox(20);
-    private Controller controller = new Controller();
+    private Controller controller;
     private SpielLogik logik;
     GridPane resourceTable = new GridPane();
     Label karrottenLabel = new Label("0");
     Label salateLabel = new Label("0");
+
 
     // TEST
 
@@ -328,7 +335,10 @@ public class MainWindow extends Application {
      * Wird aufgerufen, wenn der Rückwärts-Knopf gedrückt wird
      */
     private void reversePressed() {
-
+        if(controller.waitForInputLock.hasQueuedThreads()){ //falls acquired, dann releasen
+            controller.waitForInputLock.release();
+        }
+        setInputParameters();
     }
 
     /**
@@ -337,7 +347,11 @@ public class MainWindow extends Application {
      * @param amount Anzahl an Vorwärtszügen, die vollendet werden
      */
     private void forwardPressed(int amount) {
-        //notify backend
+        if(controller.waitForInputLock.hasQueuedThreads()){ //falls acquired, dann releasen
+            controller.waitForInputLock.release();
+        }
+        setInputParameters();
+
     }
 
     /**
@@ -436,6 +450,28 @@ public class MainWindow extends Application {
      */
     public void showGetCarrotBtn(boolean state) {
         getCarrotBtn.setDisable(!state);
+    }
+
+    /**
+     * Returns the instance of the MainWindow
+     * @return
+     */
+    public static MainWindow getInstance() {
+        return instance;
+    }
+    /**
+     * Sets the input parameters from the GUI into the controller
+     */
+    private void setInputParameters(){
+        
+    }
+
+    /**
+     * Sets the controller for the MainWindow view
+     * @param ctrl controller class
+     */
+    public void setController(Controller ctrl){
+        controller = ctrl;
     }
 
 }

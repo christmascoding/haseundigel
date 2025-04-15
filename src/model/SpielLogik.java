@@ -3,8 +3,9 @@ package src.model;
 import java.util.*;
 import java.util.List;
 import javafx.scene.image.Image;
+import src.Controller;
 
-public class SpielLogik implements Config{
+public class SpielLogik implements Config, Runnable{
 
     private int configMorePlayers = 0; // configures 1 for more than 4 players
 
@@ -19,7 +20,17 @@ public class SpielLogik implements Config{
 
     private List<Spieler> platzierungsliste = new ArrayList<Spieler>();        // Liste alle Mitspieler im Ziel, chronologisch nach Zieleinlauf
 
+    private Controller controller;
+
     private Image testimage;
+
+    @Override
+    public void run() {
+        //Wird aufgerufen, wenn SpielLogik-Instanz in seinem Thread aufgerufen wird
+        while(controller.gameActive){
+            playRound();
+        }
+    }
 
     public SpielLogik(){
         createPosFeldListe();
@@ -607,6 +618,14 @@ public class SpielLogik implements Config{
 
     }
 
+    /**
+     * Sets the controller for this SpielLogik Model
+     * @param ctrl controller class
+     */
+    public void setController(Controller ctrl){
+        controller = ctrl;
+    }
+
     // funct to test sth
     public void teststh(){
 
@@ -629,5 +648,6 @@ public class SpielLogik implements Config{
 
 
     }
+
 
 }
