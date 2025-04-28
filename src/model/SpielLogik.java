@@ -66,6 +66,8 @@ public class SpielLogik implements Config, Runnable{
         }
 
         Spieler roundplayer = this.mitspieler.get(this.indexCtr);
+        controller.showMoveBackwardBtn(true);
+        controller.showMoveForwardBtn(true);
 
         // player has already finished -> go to next player
         if( roundplayer.getAktuelleFeldNr() == Config.numFeldListe.length -1 ) return;
@@ -90,6 +92,7 @@ public class SpielLogik implements Config, Runnable{
                 // nehmen/abgeben, oder laufen? lastWalkedWide auf 0
                 // to do replace by GUI interaction
                 System.out.println("0 - Karottenfeld nutzen; sonst laufen");
+                controller.showCarrotBtn(true);
                 /*Scanner scan = new Scanner(System.in);
                 int inp = scan.nextInt();*/
                 // wait for the GUI -> lock semaphore
@@ -99,12 +102,14 @@ public class SpielLogik implements Config, Runnable{
                     throw new RuntimeException(e);
                 }
                 acquireInputs(); //set inputs to new inputs
+                controller.showCarrotBtn(false);
 
 
                 // KarottenFeld nutzen
                 if(input.isEatCarrotsPressed()){
 
                     roundplayer.karottenFeldAction();
+                    controller.triggerFieldRender(mitspieler);
                     roundplayer.didNotWalked();
                     debugRoundplayerOutput();
                     return;
@@ -179,13 +184,14 @@ public class SpielLogik implements Config, Runnable{
                     //scan = new Scanner(System.in);
                     //inp = scan.nextInt();
                     // wait for the GUI -> lock semaphore
+                    controller.showSaladBtn(true);
                     try {
                         controller.waitForInputLock.acquire(1);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
                     acquireInputs(); //set inputs to new inputs
-
+                    controller.showSaladBtn(false);
                     // Salatfeld nutzen
                     if(input.isSaladEatenPressed()){
 
@@ -308,7 +314,8 @@ public class SpielLogik implements Config, Runnable{
         // increase counter or start from 0 again
         this.indexCtr ++;
         if( this.indexCtr >= this.mitspieler.size() ) this.indexCtr = 0;
-
+        controller.showMoveBackwardBtn(false);
+        controller.showMoveForwardBtn(false);
     }
 
 

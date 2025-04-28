@@ -2,6 +2,7 @@ package src.gui;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -42,6 +43,8 @@ public class MainWindow extends Application {
     private Button eatSaladBtn = new Button("Salat essen");
     private Button endTurnBtn = new Button("Zug beenden");
     private VBox pauseScreen = new VBox();
+    private double imgWidth;
+    private double imgHeight;
     private Pane fieldPane = new Pane();
     private final int playerWidth = 40;
     private HBox playerUI = new HBox(20);
@@ -51,6 +54,9 @@ public class MainWindow extends Application {
     Label karrottenLabel = new Label("0");
     Label salateLabel = new Label("0");
     private InputFormat inputs = new InputFormat(0, false, false, false, false, false);
+    private HBox turnBox = new HBox(10);
+    private Label currentPlayerLabel = new Label("Spieler am Zug:");
+    private ImageView currentPlayerIcon = new ImageView();
 
 
 
@@ -110,6 +116,14 @@ public class MainWindow extends Application {
         playerUI.setAlignment(Pos.CENTER);
         playerUI.setStyle("-fx-background-color: #f4f4f4; -fx-padding: 20px;");
 
+        turnBox.setAlignment(Pos.CENTER);
+        turnBox.setPadding(new Insets(5));
+        turnBox.setMaxWidth(Double.MAX_VALUE); //das vvlt käse code
+        turnBox.getChildren().addAll(currentPlayerLabel, currentPlayerIcon);
+
+        currentPlayerIcon.setFitWidth(32); //icon size
+        currentPlayerIcon.setFitHeight(32);
+
         stepInput.setPrefWidth(50);
         stepInput.setPromptText("Schritte");
 
@@ -153,17 +167,21 @@ public class MainWindow extends Application {
 
         moveForwardBtn.setOnAction(e -> forwardPressed());
         moveBackwardBtn.setOnAction(e -> backwardPressed());
+        eatCarrotBtn.setOnAction(e -> eatCarrotPressed());
+        eatSaladBtn.setOnAction(e -> eatSaladPressed());
         BorderPane root = new BorderPane();
-        root.setCenter(boardPane);
-        root.setBottom(playerUI);
-        //root.setTop(pauseScreen);  // Pausenbildschirm über Spielerleiste
 
-        VBox centerBox = new VBox();
-        centerBox.getChildren().addAll(boardPane, pauseScreen);
+        //spielfeld and pause
+        VBox centerBox = new VBox(boardPane, pauseScreen);
         root.setCenter(centerBox);
-        root.setBottom(playerUI);
 
-        Scene scene = new Scene(root, 1500, 800);
+        //bottom box with player thing and other thing
+        VBox bottomBox = new VBox(5, turnBox, playerUI);
+        bottomBox.setAlignment(Pos.CENTER);
+        root.setBottom(bottomBox);
+
+
+        Scene scene = new Scene(root, 1500, 900);
         primaryStage.setScene(scene);
         primaryStage.show();
 
@@ -180,9 +198,9 @@ public class MainWindow extends Application {
     }
 
 
-    private void displayFields(Pane pane, ImageView boardImage) {
-        double imgWidth = boardImage.getBoundsInParent().getWidth();  // Breite des Spielfeldes
-        double imgHeight = boardImage.getBoundsInParent().getHeight(); // Höhe des Spielfeldes
+    private void displayFields(Pane pane, ImageView boardImage) { //has to be run once
+        imgWidth = boardImage.getBoundsInParent().getWidth();  // Breite des Spielfeldes
+        imgHeight = boardImage.getBoundsInParent().getHeight(); // Höhe des Spielfeldes
 
         for (Coordinate coordinate : coordinates) {
             double relX = (double) coordinate.x() / 2892;  // Relativkoordinate X
@@ -204,19 +222,6 @@ public class MainWindow extends Application {
     }
 
 
-    private void updateFieldPositions(Pane pane, ImageView boardImage) {
-        double imgWidth = boardImage.getBoundsInParent().getWidth();
-        double imgHeight = boardImage.getBoundsInParent().getHeight();
-
-        for (var node : pane.getChildren()) {
-            if (node instanceof Rectangle field) {
-                double[] relPos = (double[]) field.getUserData();
-                field.setLayoutX(imgWidth * relPos[0] - field.getWidth() / 2);
-                field.setLayoutY(imgHeight * relPos[1] - field.getHeight() / 2);
-            }
-        }
-    }
-
     public void clearPlayersOnField() {
         Platform.runLater(() -> {
             fieldPane.getChildren().removeIf(node -> node instanceof ImageView);
@@ -235,14 +240,13 @@ public class MainWindow extends Application {
 
             // Hole die Koordinaten des aktuellen Feldes
             Coordinate fieldCoords = coordinateTable.getCoordinateTable().get(fieldIndex);
+
             double relX = (double) fieldCoords.x() / 2892;
             double relY = (double) fieldCoords.y() / 2184;
 
             // Berechne die absolute Position des Feldes
-            double imgWidth = fieldPane.getWidth();  // Breite des Spielfeldes
-            double imgHeight = fieldPane.getHeight(); // Höhe des Spielfeldes
-            double absX = imgWidth * relX;
-            double absY = imgHeight * relY;
+            double absX = imgWidth * relX - 20;
+            double absY = imgHeight * relY - 20;
 
             // Wenn mehr als 2 Spieler vorhanden sind, runde Anordnung
             if (players.size() >= 2) {
@@ -379,7 +383,26 @@ public class MainWindow extends Application {
      * Wird aufgerufen, wenn Rückwärts-Knopf gedürckt wird
      */
     private void backwardPressed(){
-        return;
+        if (controller.waitForInputLock.hasQueuedThreads()) {  // Falls acquired, dann releasen und ausführen
+            controller.waitForInputLock.release();
+            resetInputs();  // Input-Variablen resetten, dann setzen
+            inputs.setWalkBackwardPressed(true);
+        }
+    }
+    private void eatSaladPressed(){
+        if (controller.waitForInputLock.hasQueuedThreads()) {  // Falls acquired, dann releasen und ausführen
+            controller.waitForInputLock.release();
+            resetInputs();  // Input-Variablen resetten, dann setzen
+            inputs.setSaladEatenPressed(true);
+        }
+    }
+
+    private void eatCarrotPressed(){
+        if (controller.waitForInputLock.hasQueuedThreads()) {  // Falls acquired, dann releasen und ausführen
+            controller.waitForInputLock.release();
+            resetInputs();  // Input-Variablen resetten, dann setzen
+            inputs.setEatCarrotsPressed(true);
+        }
     }
 
     /**
@@ -408,7 +431,7 @@ public class MainWindow extends Application {
      *
      * @param state True falls angezeigt werden soll, bei false ist es ausgegraut
      */
-    private void showEatCarrot(boolean state) {
+    public void showEatCarrot(boolean state) {
         eatCarrotBtn.setDisable(!state);
     }
 
@@ -417,8 +440,14 @@ public class MainWindow extends Application {
      *
      * @param state True falls angezeigt werden soll, bei false ist es ausgegraut
      */
-    private void showEatSalad(boolean state) {
+    public void showEatSalad(boolean state) {
         eatSaladBtn.setDisable(!state);
+    }
+    public void showMoveForward(boolean state){
+        moveForwardBtn.setDisable(!state);
+    }
+    public void showMoveBackward(boolean state){
+        moveBackwardBtn.setDisable(!state);
     }
 
     /**
@@ -457,13 +486,20 @@ public class MainWindow extends Application {
      */
     private void updatePlayerGUI() {
         Spieler current = this.logik.getCurrentPlayer();
+
+        //update resource
         resourceTable.getChildren().remove(karrottenLabel);
         resourceTable.getChildren().remove(salateLabel);
         karrottenLabel = new Label(String.valueOf(current.getKarotten()));
-        salateLabel = new Label(String.valueOf(current.getSalate()));
-        resourceTable.add(karrottenLabel, 1, 0);  // Platzhalterwert
-        resourceTable.add(salateLabel, 1, 1);
+        salateLabel   = new Label(String.valueOf(current.getSalate()));
+        resourceTable.add(karrottenLabel, 1, 0);
+        resourceTable.add(salateLabel,  1, 1);
+
+        //update turnbox
+        currentPlayerLabel.setText("Spieler am Zug: " + current.getName());
+        currentPlayerIcon.setImage(current.getPlayerImage());
     }
+
 
     public InputFormat getInputs(){
         return inputs;

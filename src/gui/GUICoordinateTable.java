@@ -8,7 +8,7 @@ import java.util.List;
 public class GUICoordinateTable {
     List<Coordinate> coordinates = new ArrayList<>();
     public GUICoordinateTable() {
-
+        coordinates.add(new Coordinate(1350,1131));
         coordinates.add(new Coordinate(1251, 1281));
         coordinates.add(new Coordinate(1071, 1278));
         coordinates.add(new Coordinate(984, 1458));

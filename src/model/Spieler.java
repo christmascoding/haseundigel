@@ -1,10 +1,11 @@
 package src.model;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
+
 import javafx.scene.image.Image;
+import src.gui.CarrotActionWindow;
+
 public class Spieler implements Config {
     
 
@@ -140,17 +141,8 @@ public class Spieler implements Config {
 
         if( this.karotten >= 10 ){
 
-            // to do replace by GUI interaction
-            System.out.println("0 - abgeben; sonst aufnehmen");
-            Scanner scan = new Scanner(System.in);
-            int inp = scan.nextInt();
-
-            // abgeben
-            if( inp == 0 ){
-                // wenn mehr als 10 Karotten vorhanden - eigentlich schon gecheckt
-                if( changeKarotten(-10) ) return;
-            }
-
+            CarrotActionWindow.Action action = CarrotActionWindow.showCarrotActionDialog();
+            if(action == CarrotActionWindow.Action.ABGEBEN) if( changeKarotten(-10) ) return;
         }
 
         // aufnehmen

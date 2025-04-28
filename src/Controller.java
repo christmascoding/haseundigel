@@ -68,4 +68,16 @@ public class Controller {
         MainWindow.getInstance().clearPlayersOnField();
         MainWindow.getInstance().renderField(players);
     }
+    public void showCarrotBtn(boolean show){
+        MainWindow.getInstance().showEatCarrot(show);
+    }
+    public void showSaladBtn(boolean show){
+        MainWindow.getInstance().showEatSalad(show);
+    }
+    public void showMoveForwardBtn(boolean show){
+        MainWindow.getInstance().showMoveForward(show);
+    }
+    public void showMoveBackwardBtn(boolean show){
+        MainWindow.getInstance().showMoveBackward(show);
+    }
 }
