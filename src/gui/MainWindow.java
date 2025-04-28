@@ -80,18 +80,14 @@ public class MainWindow extends Application {
         // riege
 
         // selection screen
-        //PlayerSelectionScreen selectionScreen = new PlayerSelectionScreen();
-        //selectionScreen.showAndWait();
-        Spieler test1 = new Spieler("hi", new Image("file:src/assets/spielfiguren/igel1.png"));
-        Spieler test2 = new Spieler("h2i", new Image("file:src/assets/spielfiguren/igel2.png"));
-        List<Spieler> spielerle = new ArrayList<>();
-        spielerle.add(test1);
-        spielerle.add(test2);
+        PlayerSelectionScreen selectionScreen = new PlayerSelectionScreen();
+        selectionScreen.showAndWait();
+
         //release lock so logic can work
         controller.logicInputReadyLock.release();
         // TEST REMOVE SELECTIONSCREEN
-        //logik.addPlayers(selectrionScreen.);
-        logik.addPlayers(spielerle);
+        logik.addPlayers(selectionScreen.getPlayers());
+
         logik.setConfigMorePlayers();
         logik.setStartRsrctoPlayers();
 
@@ -482,20 +478,24 @@ public class MainWindow extends Application {
     /**
      * Aktualisiert die GUI mit den Spielerressourcen mit dem nächsten Spieler, der am Zug ist
      */
-    private void updatePlayerGUI() {
-        Spieler current = this.logik.getCurrentPlayer();
+    public void updatePlayerGUI() {
+        Platform.runLater(() -> {
 
-        //update resource
-        resourceTable.getChildren().remove(karrottenLabel);
-        resourceTable.getChildren().remove(salateLabel);
-        karrottenLabel = new Label(String.valueOf(current.getKarotten()));
-        salateLabel   = new Label(String.valueOf(current.getSalate()));
-        resourceTable.add(karrottenLabel, 1, 0);
-        resourceTable.add(salateLabel,  1, 1);
 
-        //update turnbox
-        currentPlayerLabel.setText("Spieler am Zug: " + current.getName());
-        currentPlayerIcon.setImage(current.getPlayerImage());
+            Spieler current = this.logik.getCurrentPlayer();
+
+            //update resource
+            resourceTable.getChildren().remove(karrottenLabel);
+            resourceTable.getChildren().remove(salateLabel);
+            karrottenLabel = new Label(String.valueOf(current.getKarotten()));
+            salateLabel = new Label(String.valueOf(current.getSalate()));
+            resourceTable.add(karrottenLabel, 1, 0);
+            resourceTable.add(salateLabel, 1, 1);
+
+            //update turnbox
+            currentPlayerLabel.setText("Spieler am Zug: " + current.getName());
+            currentPlayerIcon.setImage(current.getPlayerImage());
+        });
     }
 
 

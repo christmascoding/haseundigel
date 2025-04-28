@@ -5,7 +5,6 @@ import java.util.List;
 import javafx.scene.image.Image;
 import src.Controller;
 import src.gui.InputFormat;
-import src.gui.MainWindow;
 
 public class SpielLogik implements Config, Runnable{
 
@@ -110,6 +109,8 @@ public class SpielLogik implements Config, Runnable{
 
                     roundplayer.karottenFeldAction();
                     controller.triggerFieldRender(mitspieler);
+                    controller.showMoveBackwardBtn(false);
+                    controller.showMoveForwardBtn(false);
                     roundplayer.didNotWalked();
                     debugRoundplayerOutput();
                     return;
@@ -322,9 +323,11 @@ public class SpielLogik implements Config, Runnable{
     private void Hasenfeld(){
 
         int cardID = this.aktionsKartenStapel.getAktionskartenID(); // take card
-
         System.out.println(this.aktionsKartenStapel.getAktionsKartenBeschreibungFromID(cardID));
         Spieler roundplayer = this.mitspieler.get(this.indexCtr);
+        controller.openActionCardActionWindow("Aktion für Spieler "+roundplayer.getName() + " "+this.aktionsKartenStapel.getAktionsKartenBeschreibungFromID(cardID));
+
+
 
         switch (cardID) {
 
@@ -665,7 +668,8 @@ public class SpielLogik implements Config, Runnable{
     private void debugRoundplayerOutput(){
 
         System.out.println(this.mitspieler.get(indexCtr).getName()+" auf Feld "+this.mitspieler.get(indexCtr).getAktuelleFeldNr()+" mit Karotten:  "+ this.mitspieler.get(indexCtr).getKarotten());
-
+        controller.triggerFieldRender(mitspieler);
+        controller.updateStats();
     }
 
     /** funct to test sth */

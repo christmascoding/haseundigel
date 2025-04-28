@@ -1,5 +1,6 @@
 package src;
 
+import src.gui.ActioncardActionWindow;
 import src.gui.InputFormat;
 import src.gui.MainWindow;
 import src.model.SpielLogik;
@@ -79,5 +80,20 @@ public class Controller {
     }
     public void showMoveBackwardBtn(boolean show){
         MainWindow.getInstance().showMoveBackward(show);
+    }
+
+    /**
+     * Opens an Action Window with the given Text
+     * @param s Text to be displayed in the action window
+     */
+    public void openActionCardActionWindow(String s){
+        ActioncardActionWindow.showAction(s);
+    }
+
+    /**
+     * Trigger the GUI to update player stats
+     */
+    public void updateStats(){
+        MainWindow.getInstance().updatePlayerGUI();
     }
 }
