@@ -1,5 +1,6 @@
 package src;
 
+import src.gui.InputFormat;
 import src.gui.MainWindow;
 import src.model.SpielLogik;
 import src.model.Spieler;
@@ -53,5 +54,10 @@ public class Controller {
 
     }
 
-
+    /**
+     * Function that gets Inputs from the GUI
+     */
+    public InputFormat grabInputFromGUI(){
+        return MainWindow.getInstance().getInputs();
+    }
 }

@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.List;
 import javafx.scene.image.Image;
 import src.Controller;
+import src.gui.InputFormat;
 import src.gui.MainWindow;
 
 public class SpielLogik implements Config, Runnable{
@@ -24,6 +25,8 @@ public class SpielLogik implements Config, Runnable{
     private Controller controller;
 
     private Image testimage;
+
+    private InputFormat input;
 
     @Override
     public void run() {
@@ -74,12 +77,19 @@ public class SpielLogik implements Config, Runnable{
                 // nehmen/abgeben, oder laufen? lastWalkedWide auf 0
                 // to do replace by GUI interaction
                 System.out.println("0 - Karottenfeld nutzen; sonst laufen");
-                Scanner scan = new Scanner(System.in);
-                int inp = scan.nextInt();
-                
+                /*Scanner scan = new Scanner(System.in);
+                int inp = scan.nextInt();*/
+                // wait for the GUI -> lock semaphore
+                try {
+                    controller.waitForInputLock.acquire(1);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                acquireInputs(); //set inputs to new inputs
+
 
                 // KarottenFeld nutzen
-                if( inp == 0 ){
+                if(input.isEatCarrotsPressed()){
 
                     roundplayer.karottenFeldAction();
                     roundplayer.didNotWalked();
@@ -153,11 +163,18 @@ public class SpielLogik implements Config, Runnable{
                 if( roundplayer.getLastWalkedWide() > 0 && roundplayer.getSalate() > 0 ){
 
                     System.out.println("0 - Salatfeld nutzen; sonst laufen");
-                    scan = new Scanner(System.in);
-                    inp = scan.nextInt();
+                    //scan = new Scanner(System.in);
+                    //inp = scan.nextInt();
+                    // wait for the GUI -> lock semaphore
+                    try {
+                        controller.waitForInputLock.acquire(1);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    acquireInputs(); //set inputs to new inputs
 
                     // Salatfeld nutzen
-                    if( inp == 0 ){
+                    if(input.isSaladEatenPressed()){
 
                         roundplayer.eatSalate();
                         // Position * 10 karotten bekommen
@@ -180,7 +197,7 @@ public class SpielLogik implements Config, Runnable{
         // move backward?
         System.out.println("Rückwärts auf Igelfeld? - 0 -- du "+ roundplayer.getName()+" hast noch " +roundplayer.getKarotten() +" Karotten" );
 
-        int inp = MainWindow.getInstance().getWalkwide();
+        //int inp = MainWindow.getInstance().getWalkwide();
 
         if( inp == 0 ) {
 
@@ -491,6 +508,10 @@ public class SpielLogik implements Config, Runnable{
         }
 
         return ret;
+    }
+
+    private void acquireInputs(){
+        input = controller.grabInputFromGUI();
     }
 
 

@@ -130,6 +130,8 @@ public class MainWindow extends Application {
         startTurnBtn.setOnAction(e -> beginTurn());
         pauseScreen.getChildren().add(startTurnBtn);
 
+        moveForwardBtn.setOnAction(e -> forwardPressed());
+        moveBackwardBtn.setOnAction(e -> backwardPressed());
         BorderPane root = new BorderPane();
         root.setCenter(boardPane);
         root.setBottom(playerUI);
@@ -220,7 +222,6 @@ public class MainWindow extends Application {
      */
     private void resetInputs(){
         inputs = new InputFormat(0, false, false, false, false, false);
-
     }
     private void displayPlayersOnField(List<Spieler> players, int fieldIndex) {
         if (players.isEmpty()) return;
@@ -350,20 +351,30 @@ public class MainWindow extends Application {
         if(controller.waitForInputLock.hasQueuedThreads()){ //falls acquired, dann releasen
             controller.waitForInputLock.release();
         }
-        setInputParameters();
+        resetInputs();
+        inputs.setWalkBackwardPressed(true);
     }
 
     /**
      * Wird aufgerufen, wenn der Vorwärts-Knopf gedrückt wird
-     *
-     * @param amount Anzahl an Vorwärtszügen, die vollendet werden
      */
-    private void forwardPressed(int amount) {
-        if(controller.waitForInputLock.hasQueuedThreads()){ //falls acquired, dann releasen
-            controller.waitForInputLock.release();
+    private void forwardPressed() {
+        if(Integer.parseInt((String)stepInput.getCharacters()) > 0){ //if input valid
+            if(controller.waitForInputLock.hasQueuedThreads()){ //falls acquired, dann releasen und ausführen
+                controller.waitForInputLock.release();
+                resetInputs(); //inputvariablen resetten, dann setzen
+                inputs.setWalkForwardPressed(true);
+                inputs.setWalkWide(Integer.parseInt((String) stepInput.getCharacters()));
+            }
         }
-        setInputParameters();
 
+    }
+
+    /**
+     * Wird aufgerufen, wenn Rückwärts-Knopf gedürckt wird
+     */
+    private void backwardPressed(){
+        return;
     }
 
     /**
@@ -446,6 +457,10 @@ public class MainWindow extends Application {
         resourceTable.add(salateLabel, 1, 1);
     }
 
+    public InputFormat getInputs(){
+        return inputs;
+    }
+
 
     /**
      * Zeigt dem Spieler eine Karte an, sobald er eine gezogen hat
@@ -469,7 +484,8 @@ public class MainWindow extends Application {
      * Sets the input parameters from the GUI into the controller
      */
     private void setInputParameters(){
-
+        resetInputs();
+        InputFormat.
     }
 
     /**
