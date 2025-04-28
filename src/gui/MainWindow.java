@@ -1,6 +1,7 @@
 package src.gui;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -58,6 +59,16 @@ public class MainWindow extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        // Create logic and controller instance, set variables
+        SpielLogik logik = new SpielLogik();
+        Controller ctrl = new Controller(logik, MainWindow.getInstance());
+        this.controller = ctrl;
+        this.logik = logik;
+        MainWindow.getInstance().setController(ctrl);
+        logik.setController(ctrl);
+        ctrl.start();
+
+
 
         primaryStage.initStyle(StageStyle.DECORATED);
         primaryStage.setTitle("Hase und Igel");
@@ -66,10 +77,13 @@ public class MainWindow extends Application {
         // selection screen
         PlayerSelectionScreen selectionScreen = new PlayerSelectionScreen();
         selectionScreen.showAndWait();
-        logik = new SpielLogik();
+        //release lock so logic can work
+        controller.logicInputReadyLock.release();
+
         logik.addPlayers(selectionScreen.getPlayers());
         logik.setConfigMorePlayers();
         logik.setStartRsrctoPlayers();
+
 
         // create Spielbrett
         ImageView boardImage = new ImageView(new Image("file:src/assets/spielbrett.jpg"));
@@ -180,22 +194,6 @@ public class MainWindow extends Application {
             field.setX(absX - 10);  // Zentrieren des Rechtecks
             field.setY(absY - 10);  // Zentrieren des Rechtecks
             pane.getChildren().add(field);
-
-            /*Igel-Bild hinzufügen
-            Image img = new Image("file:src/assets/igel.jpg");
-            ImageView piece = new ImageView(img);
-            piece.setFitWidth(30);
-            piece.setFitHeight(30);
-
-            // Setze die Position des Igel-Bildes wie das Feld
-            piece.setX(absX - piece.getFitWidth() / 2);  // Zentrieren des Bildes
-            piece.setY(absY - piece.getFitHeight() / 2); // Zentrieren des Bildes
-
-            piece.setUserData(new double[]{relX, relY});
-            pane.getChildren().add(piece);
-
-            // Setze das Bild in den Vordergrund
-            piece.toFront();*/
         }
     }
 
@@ -213,8 +211,10 @@ public class MainWindow extends Application {
         }
     }
 
-    private void clearPlayersOnField() {
-        fieldPane.getChildren().removeIf(node -> node instanceof ImageView);
+    public void clearPlayersOnField() {
+        Platform.runLater(() -> {
+            fieldPane.getChildren().removeIf(node -> node instanceof ImageView);
+        });
     }
 
     /**
@@ -224,124 +224,119 @@ public class MainWindow extends Application {
         inputs = new InputFormat(0, false, false, false, false, false);
     }
     private void displayPlayersOnField(List<Spieler> players, int fieldIndex) {
-        if (players.isEmpty()) return;
+        Platform.runLater(() -> {
+            if (players.isEmpty()) return;
 
-        // Hole die Koordinaten des aktuellen Feldes
-        Coordinate fieldCoords = coordinateTable.getCoordinateTable().get(fieldIndex);
-        double relX = (double) fieldCoords.x() / 2892;
-        double relY = (double) fieldCoords.y() / 2184;
+            // Hole die Koordinaten des aktuellen Feldes
+            Coordinate fieldCoords = coordinateTable.getCoordinateTable().get(fieldIndex);
+            double relX = (double) fieldCoords.x() / 2892;
+            double relY = (double) fieldCoords.y() / 2184;
 
-        // Berechne die absolute Position des Feldes
-        double imgWidth = fieldPane.getWidth();  // Breite des Spielfeldes
-        double imgHeight = fieldPane.getHeight(); // Höhe des Spielfeldes
-        double absX = imgWidth * relX;
-        double absY = imgHeight * relY;
+            // Berechne die absolute Position des Feldes
+            double imgWidth = fieldPane.getWidth();  // Breite des Spielfeldes
+            double imgHeight = fieldPane.getHeight(); // Höhe des Spielfeldes
+            double absX = imgWidth * relX;
+            double absY = imgHeight * relY;
 
-        // Wenn mehr als 2 Spieler vorhanden sind, runde Anordnung
-        if (players.size() >= 2) {
-            // Verringere den Radius, um die Spieler näher zusammenzubringen
-            double radius = 20; // Kleineren Radius verwenden, um Spieler näher zu positionieren
-            double angleStep = 2 * Math.PI / players.size(); // Der Abstand zwischen den Spielern im Kreis
+            // Wenn mehr als 2 Spieler vorhanden sind, runde Anordnung
+            if (players.size() >= 2) {
+                // Verringere den Radius, um die Spieler näher zusammenzubringen
+                double radius = 20; // Kleineren Radius verwenden, um Spieler näher zu positionieren
+                double angleStep = 2 * Math.PI / players.size(); // Der Abstand zwischen den Spielern im Kreis
 
-            // Iteriere über alle Spieler und setze ihre Position auf dem Kreis
-            for (int i = 0; i < players.size(); i++) {
-                Spieler p = players.get(i);
+                // Iteriere über alle Spieler und setze ihre Position auf dem Kreis
+                for (int i = 0; i < players.size(); i++) {
+                    Spieler p = players.get(i);
 
-                // Lade das Bild für den Spieler (Igel)
-                Image img;
-                try {
-                    img = new Image("file:src/assets/igel.jpg");
-                    if (img.isError()) {
-                        System.out.println("FEHLER: Bild konnte nicht geladen werden.");
+                    // Lade das Bild für den Spieler (Igel)
+                    Image img;
+                    try {
+                        img = p.getPlayerImage();
+                        if (img.isError()) {
+                            System.out.println("FEHLER: Bild konnte nicht geladen werden.");
+                            continue;
+                        }
+                    } catch (Exception e) {
+                        System.out.println("FEHLER: Ausnahme beim Laden des Bildes.");
                         continue;
                     }
-                } catch (Exception e) {
-                    System.out.println("FEHLER: Ausnahme beim Laden des Bildes.");
-                    continue;
+
+                    ImageView piece = new ImageView(img);
+                    piece.setFitWidth(playerWidth / 1.5);
+                    piece.setFitHeight(playerWidth / 1.5);
+
+                    // Berechne die Position jedes Spielers im Kreis
+                    double angle = angleStep * i; // Der aktuelle Winkel für den Spieler
+                    double offsetX = radius * Math.cos(angle); // X-Offset basierend auf dem Winkel
+                    double offsetY = radius * Math.sin(angle); // Y-Offset basierend auf dem Winkel
+
+                    // Setze die Position des Igels auf dem Kreis um das Feld
+                    piece.setX(absX + offsetX);  // Zentriere das Bild und setze den X-Offset
+                    piece.setY(absY + offsetY);  // Zentriere das Bild und setze den Y-Offset
+
+                    // Das Bild in den Vordergrund setzen
+                    piece.toFront();
+
+                    // Füge das Spielfigur-Bild zum Pane hinzu
+                    fieldPane.getChildren().add(piece);
                 }
+            } else {
+                // Anordnung wie vorher, wenn weniger als oder genau 2 Spieler
+                for (int i = 0; i < players.size(); i++) {
+                    Spieler p = players.get(i);
 
-                ImageView piece = new ImageView(img);
-                piece.setFitWidth(playerWidth / 1.5);
-                piece.setFitHeight(playerWidth / 1.5);
-
-                // Berechne die Position jedes Spielers im Kreis
-                double angle = angleStep * i; // Der aktuelle Winkel für den Spieler
-                double offsetX = radius * Math.cos(angle); // X-Offset basierend auf dem Winkel
-                double offsetY = radius * Math.sin(angle); // Y-Offset basierend auf dem Winkel
-
-                // Setze die Position des Igels auf dem Kreis um das Feld
-                piece.setX(absX + offsetX - 15);  // Zentriere das Bild und setze den X-Offset
-                piece.setY(absY + offsetY - 15);  // Zentriere das Bild und setze den Y-Offset
-
-                // Korrektur, um die Position der Spielfigur nach oben links zu verschieben
-                int korrekturX = 15;
-                int korrekturY = -15;
-
-                piece.setX(piece.getX() - korrekturX);
-                piece.setY(piece.getY() - korrekturY);
-
-                // Das Bild in den Vordergrund setzen
-                piece.toFront();
-
-                // Füge das Spielfigur-Bild zum Pane hinzu
-                fieldPane.getChildren().add(piece);
-            }
-        } else {
-            // Anordnung wie vorher, wenn weniger als oder genau 2 Spieler
-            for (int i = 0; i < players.size(); i++) {
-                Spieler p = players.get(i);
-
-                // Lade das Bild für den Spieler (Igel)
-                Image img;
-                try {
-                    img = new Image("file:src/assets/igel.jpg");
-                    if (img.isError()) {
-                        System.out.println("FEHLER: Bild konnte nicht geladen werden.");
+                    // Lade das Bild für den Spieler (Igel)
+                    Image img;
+                    try {
+                        img = p.getPlayerImage();
+                        if (img.isError()) {
+                            System.out.println("FEHLER: Bild konnte nicht geladen werden.");
+                            continue;
+                        }
+                    } catch (Exception e) {
+                        System.out.println("FEHLER: Ausnahme beim Laden des Bildes.");
                         continue;
                     }
-                } catch (Exception e) {
-                    System.out.println("FEHLER: Ausnahme beim Laden des Bildes.");
-                    continue;
+
+                    ImageView piece = new ImageView(img);
+                    piece.setFitWidth(playerWidth);
+                    piece.setFitHeight(playerWidth);
+
+                    // Setze die Position des Igels relativ zum Feld, sodass der Igel zentriert wird
+                    piece.setX(absX);  // Zentriere auf dem Feld
+                    piece.setY(absY);  // Zentriere auf dem Feld
+
+                    // Das Bild in den Vordergrund setzen
+                    piece.toFront();
+
+                    // Füge das Spielfigur-Bild zum Pane hinzu
+                    fieldPane.getChildren().add(piece);
                 }
-
-                ImageView piece = new ImageView(img);
-                piece.setFitWidth(playerWidth);
-                piece.setFitHeight(playerWidth);
-
-                // igelkorrektur
-                int korrekturX = 30;
-                int korrekturY = -15;
-
-                // Setze die Position des Igels relativ zum Feld, sodass der Igel zentriert wird
-                piece.setX(absX - korrekturX);  // Zentriere auf dem Feld
-                piece.setY(absY - korrekturY);  // Zentriere auf dem Feld
-
-                // Das Bild in den Vordergrund setzen
-                piece.toFront();
-
-                // Füge das Spielfigur-Bild zum Pane hinzu
-                fieldPane.getChildren().add(piece);
             }
-        }
+        });
     }
 
-    private void renderField(List<Spieler> players) {
-        List<Integer> activeFields = new ArrayList<>();
-        for (int i = 0; i < coordinateTable.getCoordinateTable().size(); i++) {
+    public void renderField(List<Spieler> players) {
+        for (int i = 0; i < coordinateTable.getCoordinateTable().size(); i++) { //iterate all fields
             List<Spieler> spielerAufFeld = new ArrayList<>();
-            for (Spieler p : players) {
+
+            for (Spieler p : players) { //save all players on field
                 if (p.getAktuelleFeldNr() == i) {
                     spielerAufFeld.add(p);
                 }
             }
+            if (!spielerAufFeld.isEmpty()) {
+                displayPlayersOnField(spielerAufFeld, i);
+            }
         }
-
     }
+
 
 
     public static void main(String[] args) {
         launch(args);
     }
+
     // Knopf-Funktionen
 
     /**
@@ -359,14 +354,16 @@ public class MainWindow extends Application {
      * Wird aufgerufen, wenn der Vorwärts-Knopf gedrückt wird
      */
     private void forwardPressed() {
-        if(Integer.parseInt((String)stepInput.getCharacters()) > 0){ //if input valid
-            if(controller.waitForInputLock.hasQueuedThreads()){ //falls acquired, dann releasen und ausführen
+        if (Integer.parseInt(stepInput.getCharacters().toString()) > 0) {
+            // if input valid
+            if (controller.waitForInputLock.hasQueuedThreads()) {  // Falls acquired, dann releasen und ausführen
                 controller.waitForInputLock.release();
-                resetInputs(); //inputvariablen resetten, dann setzen
+                resetInputs();  // Input-Variablen resetten, dann setzen
                 inputs.setWalkForwardPressed(true);
-                inputs.setWalkWide(Integer.parseInt((String) stepInput.getCharacters()));
+                inputs.setWalkWide(Integer.parseInt(stepInput.getCharacters().toString()));
             }
         }
+
 
     }
 
@@ -388,9 +385,12 @@ public class MainWindow extends Application {
      * Wird aufgerufen, wenn der User den nächsten Zug beginnen möchte (in der Pause)
      */ // to do - auch hier -> MVC
     private void beginTurn() {
+
+        //unlock the begin turn semaphore, so the logic can start working
+        controller.startTurnLock.release();
         showPauseScreen(false);
         updatePlayerGUI();
-        logik.playRound();
+
 
         //Contorller: Abfrage, ob der Spieler sich auf einem Karrotten- bzw. Salatfeld befindet, falls das der Fall ist, die jeweiligen Knöpfe einblenden
     }
@@ -502,7 +502,8 @@ public class MainWindow extends Application {
         }
         resetInputs();
         stepInput.getCharacters();
-        return Integer.parseInt(String.valueOf(stepInput.getCharacters()));
+        return Integer.parseInt(stepInput.getCharacters().toString());
+
     }
 
     private void triggerMoveForward(){

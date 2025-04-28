@@ -12,12 +12,7 @@ import java.util.List;
 public class Main {
     public List<Spieler> initialPlayers;
     public static void main(String[] args) {
-        SpielLogik logik = new SpielLogik();
         Application.launch(MainWindow.class, args);
-        Controller ctrl = new Controller(logik, MainWindow.getInstance());
-        MainWindow.getInstance().setController(ctrl);
-        logik.setController(ctrl);
-        ctrl.start();
 
     }
 }

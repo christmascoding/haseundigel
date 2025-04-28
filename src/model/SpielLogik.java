@@ -31,6 +31,12 @@ public class SpielLogik implements Config, Runnable{
     @Override
     public void run() {
         //Wird aufgerufen, wenn SpielLogik-Instanz in seinem Thread aufgerufen wird
+        //Warte darauf, dass Spieler alle regisriert sind
+        try{
+            controller.logicInputReadyLock.acquire();
+        }catch(InterruptedException e){
+            throw new RuntimeException(e);
+        }
         while(controller.gameActive){
             playRound();
         }
@@ -40,8 +46,6 @@ public class SpielLogik implements Config, Runnable{
         createPosFeldListe();
 
         // to do -> interaction with GUI to add players
-
-
         this.aktionsKartenStapel = new Aktionskartenstapel();
         this.aktionsKartenStapel.mischen();
         this.indexCtr = 0;
@@ -53,6 +57,13 @@ public class SpielLogik implements Config, Runnable{
 
     }
     public void playRound(){
+        //wait for startround semaphore to be unlocked UwU
+        controller.triggerFieldRender(mitspieler);
+        try {
+            controller.startTurnLock.acquire();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
 
         Spieler roundplayer = this.mitspieler.get(this.indexCtr);
 
@@ -66,6 +77,8 @@ public class SpielLogik implements Config, Runnable{
             return;
 
         }
+
+        //now continue hehe
 
 //--------> to do GUI Interaction should start here, not by suspending or already finsihed ---------------
 
@@ -237,6 +250,7 @@ public class SpielLogik implements Config, Runnable{
             //inp = MainWindow.getInstance().getWalkwide();
             walkwide = input.getWalkWide();
             moveSuccess = roundplayer.moveForward(walkwide, this.platzierungsliste.size());
+            controller.triggerFieldRender(mitspieler);
 
             if( moveSuccess < 0 ){
                 switch (moveSuccess){
@@ -455,6 +469,7 @@ public class SpielLogik implements Config, Runnable{
             if( fieldisNotOccupied(prevIgelfeld) ){
 
                 roundplayer.moveBackwardto(prevIgelfeld);
+                controller.triggerFieldRender(mitspieler);
                 return true;
 
             }
