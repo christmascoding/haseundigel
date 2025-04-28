@@ -16,6 +16,7 @@ import src.model.SpielLogik;
 import src.model.Spieler;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javafx.stage.StageStyle;
 
@@ -72,15 +73,21 @@ public class MainWindow extends Application {
 
         primaryStage.initStyle(StageStyle.DECORATED);
         primaryStage.setTitle("Hase und Igel");
-        // riegel
+        // riege
 
         // selection screen
-        PlayerSelectionScreen selectionScreen = new PlayerSelectionScreen();
-        selectionScreen.showAndWait();
+        //PlayerSelectionScreen selectionScreen = new PlayerSelectionScreen();
+        //selectionScreen.showAndWait();
+        Spieler test1 = new Spieler("hi", new Image("file:src/assets/spielfiguren/igel1.png"));
+        Spieler test2 = new Spieler("h2i", new Image("file:src/assets/spielfiguren/igel2.png"));
+        List<Spieler> spielerle = new ArrayList<>();
+        spielerle.add(test1);
+        spielerle.add(test2);
         //release lock so logic can work
         controller.logicInputReadyLock.release();
-
-        logik.addPlayers(selectionScreen.getPlayers());
+        // TEST REMOVE SELECTIONSCREEN
+        //logik.addPlayers(selectrionScreen.);
+        logik.addPlayers(spielerle);
         logik.setConfigMorePlayers();
         logik.setStartRsrctoPlayers();
 
@@ -169,7 +176,6 @@ public class MainWindow extends Application {
 
         primaryStage.show();
         //displayPlayersOnField(spielerles, 0);
-
 
     }
 
@@ -315,6 +321,8 @@ public class MainWindow extends Application {
             }
         });
     }
+
+
 
     public void renderField(List<Spieler> players) {
         for (int i = 0; i < coordinateTable.getCoordinateTable().size(); i++) { //iterate all fields
