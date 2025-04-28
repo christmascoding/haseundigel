@@ -15,9 +15,7 @@ import javafx.scene.shape.Rectangle;
 import src.Controller;
 import src.model.SpielLogik;
 import src.model.Spieler;
-
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import javafx.stage.StageStyle;
 
@@ -32,31 +30,31 @@ public class MainWindow extends Application {
     public int guiFieldWidth = 1280;
     public int guiFieldHeight = 720;
     GUICoordinateTable coordinateTable = new GUICoordinateTable();
-    private List<Coordinate> coordinates = coordinateTable.getCoordinateTable();
+    private final List<Coordinate> coordinates = coordinateTable.getCoordinateTable();
 
     //private Label resourceLabel = new Label("Ressourcen: 5 Karotten, 3 Salat");
-    private TextField stepInput = new TextField();
-    private Button moveForwardBtn = new Button("Vorwärts");
-    private Button moveBackwardBtn = new Button("Rückwärts");
-    private Button eatCarrotBtn = new Button("Karotten essen");
-    private Button getCarrotBtn = new Button("Karotten erhalten");
-    private Button eatSaladBtn = new Button("Salat essen");
-    private Button endTurnBtn = new Button("Zug beenden");
-    private VBox pauseScreen = new VBox();
+    private final TextField stepInput = new TextField();
+    private final Button moveForwardBtn = new Button("Vorwärts");
+    private final Button moveBackwardBtn = new Button("Rückwärts");
+    private final Button eatCarrotBtn = new Button("Karotten essen");
+    private final Button getCarrotBtn = new Button("Karotten erhalten");
+    private final Button eatSaladBtn = new Button("Salat essen");
+    private final Button endTurnBtn = new Button("Zug beenden");
+    private final VBox pauseScreen = new VBox();
     private double imgWidth;
     private double imgHeight;
-    private Pane fieldPane = new Pane();
+    private final Pane fieldPane = new Pane();
     private final int playerWidth = 40;
-    private HBox playerUI = new HBox(20);
+    private final HBox playerUI = new HBox(20);
     private Controller controller;
     private SpielLogik logik;
     GridPane resourceTable = new GridPane();
     Label karrottenLabel = new Label("0");
     Label salateLabel = new Label("0");
     private InputFormat inputs = new InputFormat(0, false, false, false, false, false);
-    private HBox turnBox = new HBox(10);
-    private Label currentPlayerLabel = new Label("Spieler am Zug:");
-    private ImageView currentPlayerIcon = new ImageView();
+    private final HBox turnBox = new HBox(10);
+    private final Label currentPlayerLabel = new Label("Spieler am Zug:");
+    private final ImageView currentPlayerIcon = new ImageView();
 
 
 
@@ -132,7 +130,7 @@ public class MainWindow extends Application {
         eatSaladBtn.setDisable(true);
         getCarrotBtn.setDisable(true);
 
-        endTurnBtn.setOnAction(e -> endTurn());
+        endTurnBtn.setOnAction(_ -> endTurn());
         moveForwardBtn.setOnAction(e -> triggerMoveForward());
 
         // Icons für Karotten und Salat
