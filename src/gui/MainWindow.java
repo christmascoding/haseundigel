@@ -482,10 +482,10 @@ public class MainWindow extends Application {
 
     /**
      * Sets the input parameters from the GUI into the controller
+     * REDUNDANT?
      */
     private void setInputParameters(){
         resetInputs();
-        InputFormat.
     }
 
     /**

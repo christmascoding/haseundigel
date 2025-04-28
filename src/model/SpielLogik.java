@@ -193,13 +193,19 @@ public class SpielLogik implements Config, Runnable{
                 }
                 break;
         }
-
         // move backward?
         System.out.println("Rückwärts auf Igelfeld? - 0 -- du "+ roundplayer.getName()+" hast noch " +roundplayer.getKarotten() +" Karotten" );
-
+        // wait for the GUI -> lock semaphore
+        try {
+            controller.waitForInputLock.acquire(1);
+            System.out.println("Semaphore locked at pos1");
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        acquireInputs(); //set inputs to new inputs
         //int inp = MainWindow.getInstance().getWalkwide();
 
-        if( inp == 0 ) {
+        if(input.isWalkBackwardPressed()) { //used to be: if input == 0 -> moved backward
 
             // if valid moved backwards to Igelfeld
             if (IgeldFeldAction()) {
@@ -214,7 +220,7 @@ public class SpielLogik implements Config, Runnable{
         System.out.println("Zugweite bitte - du "+ roundplayer.getName()+" hast noch " +roundplayer.getKarotten() +" Karotten" );
 
         //int walkwide = 1;       // input paramter - needs to come from GUI
-        int walkwide;
+        int walkwide = input.getWalkWide();
 
         int moveSuccess = -1;
 
@@ -228,8 +234,8 @@ public class SpielLogik implements Config, Runnable{
 
             }
 
-            inp = MainWindow.getInstance().getWalkwide();
-            walkwide = inp;
+            //inp = MainWindow.getInstance().getWalkwide();
+            walkwide = input.getWalkWide();
             moveSuccess = roundplayer.moveForward(walkwide, this.platzierungsliste.size());
 
             if( moveSuccess < 0 ){
