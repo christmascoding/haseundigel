@@ -94,13 +94,20 @@ public class MainWindow extends Application {
 
         // create Spielbrett
         ImageView boardImage = new ImageView(new Image("file:src/assets/spielbrett.jpg"));
+        ImageView renntafelImage = new ImageView(new Image("file:src/assets/renntafel.jpg"));
         boardImage.setPreserveRatio(true);
         boardImage.setFitWidth(guiFieldWidth);
         boardImage.setFitHeight(guiFieldHeight);
+        renntafelImage.setPreserveRatio(true);
+        renntafelImage.setFitWidth(400);
+        imgWidth = boardImage.getBoundsInParent().getWidth();
+        renntafelImage.setX(imgWidth);
+
 
         Pane boardPane = new Pane();
         boardPane.setMinSize(guiFieldWidth, guiFieldHeight);
         boardPane.getChildren().add(boardImage);
+        boardPane.getChildren().add(renntafelImage);
 
 
         fieldPane.setMinSize(guiFieldWidth, guiFieldHeight);
@@ -203,6 +210,7 @@ public class MainWindow extends Application {
             // Berechne die absolute Position im sichtbaren Bereich
             double absX = imgWidth * relX;
             double absY = imgHeight * relY;
+
 
             // Rechteck für das Spielfeld (bleibt so wie es ist)
             Rectangle field = new Rectangle(20, 20);
