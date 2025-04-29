@@ -59,7 +59,9 @@ public class SpielLogik implements Config, Runnable{
             return this.mitspieler.get(indexCtr);
 
     }
+
     public void playRound(){
+
         //wait for startround semaphore to be unlocked UwU
         controller.triggerFieldRender(mitspieler);
         try {
@@ -73,18 +75,24 @@ public class SpielLogik implements Config, Runnable{
         controller.showMoveBackwardBtn(true);
         controller.showMoveForwardBtn(true);
 
-        // player has already finished -> go to next player
-        if( roundplayer.getAktuelleFeldNr() == Config.numFeldListe.length -1 ) return;
+        // player has already finished game -> go to next player
+        if( roundplayer.getAktuelleFeldNr() == Config.numFeldListe.length -1 ) {
+
+            endOfTurnAction();
+            return;
+
+        }
 
         // player has to suspend
         if(roundplayer.isNextSuspend()) {
 
             roundplayer.suspend();
+            endOfTurnAction();
             return;
 
         }
 
-        //now continue hehe
+        //now continue here
 
 //--------> to do GUI Interaction should start here, not by suspending or already finsihed ---------------
 
