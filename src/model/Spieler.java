@@ -142,7 +142,9 @@ public class Spieler implements Config {
         if( this.karotten >= 10 ){
 
             CarrotActionWindow.Action action = CarrotActionWindow.showCarrotActionDialog();
-            if(action == CarrotActionWindow.Action.ABGEBEN) if( changeKarotten(-10) ) return;
+            if(action == CarrotActionWindow.Action.ABGEBEN){
+                if( changeKarotten(-10) ) return;
+            }
         }
 
         // aufnehmen

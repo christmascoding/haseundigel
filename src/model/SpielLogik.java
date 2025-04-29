@@ -2,9 +2,12 @@ package src.model;
 
 import java.util.*;
 import java.util.List;
+
+import javafx.application.Application;
 import javafx.scene.image.Image;
 import src.Controller;
 import src.gui.ActioncardActionWindow;
+import src.gui.GameWonActionWindow;
 import src.gui.InputFormat;
 
 public class SpielLogik implements Config, Runnable{
@@ -86,7 +89,8 @@ public class SpielLogik implements Config, Runnable{
 //--------> to do GUI Interaction should start here, not by suspending or already finsihed ---------------
 
         // check fields at begin of round (positionfeld + Karottenfeld + Salatfeld)
-        switch(this.posFeldListe.get(roundplayer.getAktuelleFeldNr())){
+        PositionsFeld currentFeld = this.posFeldListe.get(roundplayer.getAktuelleFeldNr());
+        switch(currentFeld){
 
             case Karottenfeld:
 
@@ -115,6 +119,7 @@ public class SpielLogik implements Config, Runnable{
                     controller.showMoveForwardBtn(false);
                     roundplayer.didNotWalked();
                     debugRoundplayerOutput();
+                    endOfTurnAction();
                     return;
 
                 }
@@ -208,6 +213,7 @@ public class SpielLogik implements Config, Runnable{
 
                         roundplayer.didNotWalked();
                         debugRoundplayerOutput();
+                        endOfTurnAction();
                         return;
 
                     }
@@ -218,13 +224,18 @@ public class SpielLogik implements Config, Runnable{
         // move backward?
         System.out.println("Rückwärts auf Igelfeld? - 0 -- du "+ roundplayer.getName()+" hast noch " +roundplayer.getKarotten() +" Karotten" );
         // wait for the GUI -> lock semaphore
-        try {
-            controller.waitForInputLock.acquire(1);
-            System.out.println("Semaphore locked at pos1");
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        //Don't wait for input if the input was already received (in Karottenfeld or Salatfeld)
+
+        if(currentFeld != PositionsFeld.Salatfeld && currentFeld != PositionsFeld.Karottenfeld){
+            try {
+                controller.waitForInputLock.acquire(1);
+                System.out.println("Semaphore locked at pos1");
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            acquireInputs(); //set inputs to new inputs
         }
-        acquireInputs(); //set inputs to new inputs
+
         //int inp = MainWindow.getInstance().getWalkwide();
 
         if(input.isWalkBackwardPressed()) { //used to be: if input == 0 -> moved backward
@@ -235,6 +246,7 @@ public class SpielLogik implements Config, Runnable{
                 debugRoundplayerOutput();
                 controller.showMoveForwardBtn(false);
                 controller.showMoveBackwardBtn(false);
+                endOfTurnAction();
                 return;
 
             }
@@ -307,7 +319,10 @@ public class SpielLogik implements Config, Runnable{
 
             if( this.platzierungsliste.size() == this.mitspieler.size() - 1 ){
                 System.out.println("Game finished");
+
+                GameWonActionWindow.showWinnerPopup(roundplayer);
                 // to do finish Game
+
             }
         }
 
@@ -325,10 +340,20 @@ public class SpielLogik implements Config, Runnable{
         }while(posBefore != roundplayer.getAktuelleFeldNr());
 
         // increase counter or start from 0 again
+        endOfTurnAction();
+
+    }
+
+    /**
+     * Function that should be called at the end of a turn - resets buttons and increases the increment counter
+     */
+    private void endOfTurnAction(){
         this.indexCtr ++;
         if( this.indexCtr >= this.mitspieler.size() ) this.indexCtr = 0;
         controller.showMoveBackwardBtn(false);
         controller.showMoveForwardBtn(false);
+        controller.showCarrotBtn(false);
+        controller.showSaladBtn(false);
     }
 
 
@@ -346,6 +371,7 @@ public class SpielLogik implements Config, Runnable{
             case 0:
 
                 roundplayer.eatSalate();
+                controller.updatePlayerResources();
                 break;
 
             case 1:
@@ -362,6 +388,7 @@ public class SpielLogik implements Config, Runnable{
             case 3:
 
                 roundplayer.karottenFeldAction();
+                controller.updatePlayerResources();
                 break;
 
             case 4:
