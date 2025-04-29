@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.List;
 import javafx.scene.image.Image;
 import src.Controller;
+import src.gui.ActioncardActionWindow;
 import src.gui.InputFormat;
 
 public class SpielLogik implements Config, Runnable{
@@ -65,6 +66,7 @@ public class SpielLogik implements Config, Runnable{
         }
 
         Spieler roundplayer = this.mitspieler.get(this.indexCtr);
+
         controller.showMoveBackwardBtn(true);
         controller.showMoveForwardBtn(true);
 
@@ -231,6 +233,8 @@ public class SpielLogik implements Config, Runnable{
             if (IgeldFeldAction()) {
 
                 debugRoundplayerOutput();
+                controller.showMoveForwardBtn(false);
+                controller.showMoveBackwardBtn(false);
                 return;
 
             }
@@ -249,8 +253,10 @@ public class SpielLogik implements Config, Runnable{
             if( roundplayer.getKarotten() == 0 ){
 
                 System.out.println(" Keine Karotten mehr -> Zurück an Start + Resrc reset");
+                controller.openActionCardActionWindow("Du hast keine Karotten mehr! Du wurdest mit neuen Ressourcen an den Sart gesetzt.");
                 roundplayer.resetRessources(this.configMorePlayers);
                 roundplayer.moveToField(0, this.platzierungsliste.size());
+                controller.triggerFieldRender(mitspieler);
 
             }
 
@@ -264,23 +270,29 @@ public class SpielLogik implements Config, Runnable{
 
                     case -1:
                         System.out.println("Bitte nochmal eingeben - dieses Feld existiert nicht!");
+                        guiInputErrorHandler("Bitte nochmal eingeben - dieses Feld existiert nicht!");
                         break;
 
                     case -2:
                         System.out.println("Bitte nochmal eingeben - Du hast nicht genug Karotten!");
+                        guiInputErrorHandler("Bitte nochmal eingeben - Du hast nicht genug Karotten!");
                         break;
 
                     case -3:
                         System.out.println("Bitte nochmal eingeben - Du darfst das Ziel noch nicht betreten!");
+                        guiInputErrorHandler("Bitte nochmal eingeben - Du darfst das Ziel noch nicht betreten!");
                         break;
 
                     case -4:
                         System.out.println("Bitte nochmal eingeben - Du darfst das Salatfeld nicht betreten!");
+                        guiInputErrorHandler("Bitte nochmal eingeben - Du darfst das Salatfeld nicht betreten!");
                         break;
 
                     case -10:
                         System.out.println("Bitte nochmal eingeben - Unzulässiger Eingabeparameter");
+                        guiInputErrorHandler("Bitte nochmal eingeben - Unzulässiger Eingabeparameter");
                         break;
+
                 }
 
             }
@@ -301,7 +313,7 @@ public class SpielLogik implements Config, Runnable{
 
 
         debugRoundplayerOutput();
-
+        controller.updatePlayerResources();
         // check for Hasenfeld + new Hasenfeld after Hasenfeld
         int posBefore;
 
@@ -384,6 +396,17 @@ public class SpielLogik implements Config, Runnable{
 
         }
 
+    }
+
+    private void guiInputErrorHandler(String message){
+        ActioncardActionWindow.showAction(message);
+        //lock semaphore to wait for another input
+        try {
+            controller.waitForInputLock.acquire(1);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        acquireInputs();
     }
     private void createPosFeldListe(){ // füllt PosFeldListe mit enstprechenden Positionsfeld-enums
 
@@ -669,10 +692,10 @@ public class SpielLogik implements Config, Runnable{
 
         System.out.println(this.mitspieler.get(indexCtr).getName()+" auf Feld "+this.mitspieler.get(indexCtr).getAktuelleFeldNr()+" mit Karotten:  "+ this.mitspieler.get(indexCtr).getKarotten());
         controller.triggerFieldRender(mitspieler);
-        controller.updateStats();
+        controller.updatePlayerResources();
     }
 
-    /** funct to test sth */
+
     /**
      * Sets the controller for this SpielLogik Model
      * @param ctrl controller class
@@ -681,28 +704,6 @@ public class SpielLogik implements Config, Runnable{
         controller = ctrl;
     }
 
-    // funct to test sth
-    public void teststh(){
-
-        mitspieler.get(0).moveToField(60, this.platzierungsliste.size());
-        mitspieler.get(1).moveToField(53, this.platzierungsliste.size());
-        mitspieler.get(2).moveToField(54, this.platzierungsliste.size());
-        //mitspieler.get(3).moveToField(63);
-        //mitspieler.get(4).moveToField(29);
-        //mitspieler.get(5).moveToField(12);
-
-
-        mitspieler.get(2).eatSalate();
-        mitspieler.get(2).eatSalate();
-        mitspieler.get(2).eatSalate();
-
-        mitspieler.get(1).eatSalate();
-        mitspieler.get(1).eatSalate();
-        mitspieler.get(1).eatSalate();
-
-
-
-    }
 
 
 }

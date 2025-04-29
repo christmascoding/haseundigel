@@ -93,7 +93,14 @@ public class Controller {
     /**
      * Trigger the GUI to update player stats
      */
-    public void updateStats(){
+    public void updatePlayerResources(){
         MainWindow.getInstance().updatePlayerGUI();
+    }
+
+    /**
+     * Updates the box that calls next player on turn
+     */
+    public void updateNextPlayerBox(){
+        MainWindow.getInstance().updateTurnBox();
     }
 }

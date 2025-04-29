@@ -412,6 +412,7 @@ public class MainWindow extends Application {
      */ // to do - beachte MVC, GUI darf nicht direkt etwas ändern: eigentlich Pause drücken -> Controller -> Model: "okay, ja gehe in pause" -> Controller -> update GUI
     private void endTurn() {
         showPauseScreen(true);
+        controller.updateNextPlayerBox();
     }
 
     /**
@@ -500,7 +501,14 @@ public class MainWindow extends Application {
             resourceTable.add(karrottenLabel, 1, 0);
             resourceTable.add(salateLabel, 1, 1);
 
+
+        });
+    }
+    public void updateTurnBox(){
+        Platform.runLater(() -> {
+
             //update turnbox
+            Spieler current = this.logik.getCurrentPlayer();
             currentPlayerLabel.setText("Spieler am Zug: " + current.getName());
             currentPlayerIcon.setImage(current.getPlayerImage());
         });
