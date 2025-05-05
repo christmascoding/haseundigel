@@ -413,6 +413,7 @@ public class MainWindow extends Application {
     private void endTurn() {
         showPauseScreen(true);
         controller.updateNextPlayerBox();
+        controller.updatePlayerResources();
     }
 
     /**

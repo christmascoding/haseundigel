@@ -37,6 +37,7 @@ public class SpielLogik implements Config, Runnable{
         //Warte darauf, dass Spieler alle regisriert sind
         try{
             controller.logicInputReadyLock.acquire();
+            System.out.println("logic input locked at pos 1");
         }catch(InterruptedException e){
             throw new RuntimeException(e);
         }
@@ -64,6 +65,7 @@ public class SpielLogik implements Config, Runnable{
         controller.triggerFieldRender(mitspieler);
         try {
             controller.startTurnLock.acquire();
+            System.out.println("Start turn locked at pos 1");
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -103,6 +105,7 @@ public class SpielLogik implements Config, Runnable{
                 // wait for the GUI -> lock semaphore
                 try {
                     controller.waitForInputLock.acquire(1);
+                    System.out.println("Semaphore locked at pos1");
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
@@ -195,6 +198,7 @@ public class SpielLogik implements Config, Runnable{
                     controller.showSaladBtn(true);
                     try {
                         controller.waitForInputLock.acquire(1);
+                        System.out.println("Semaphore locked at pos2");
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
@@ -208,6 +212,7 @@ public class SpielLogik implements Config, Runnable{
                         for(int position: getPosition()){
 
                             roundplayer.changeKarotten(position * 10);
+                            controller.updatePlayerResources();
 
                         }
 
@@ -229,7 +234,7 @@ public class SpielLogik implements Config, Runnable{
         if(currentFeld != PositionsFeld.Salatfeld && currentFeld != PositionsFeld.Karottenfeld){
             try {
                 controller.waitForInputLock.acquire(1);
-                System.out.println("Semaphore locked at pos1");
+                System.out.println("Semaphore locked at pos3");
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -328,7 +333,6 @@ public class SpielLogik implements Config, Runnable{
 
 
         debugRoundplayerOutput();
-        controller.updatePlayerResources();
         // check for Hasenfeld + new Hasenfeld after Hasenfeld
         int posBefore;
 
@@ -430,6 +434,7 @@ public class SpielLogik implements Config, Runnable{
         //lock semaphore to wait for another input
         try {
             controller.waitForInputLock.acquire(1);
+            System.out.println("Semaphore locked at pos4");
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -719,7 +724,6 @@ public class SpielLogik implements Config, Runnable{
 
         System.out.println(this.mitspieler.get(indexCtr).getName()+" auf Feld "+this.mitspieler.get(indexCtr).getAktuelleFeldNr()+" mit Karotten:  "+ this.mitspieler.get(indexCtr).getKarotten());
         controller.triggerFieldRender(mitspieler);
-        controller.updatePlayerResources();
     }
 
 
