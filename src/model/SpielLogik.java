@@ -251,19 +251,7 @@ public class SpielLogik implements Config, Runnable{
 
         //int inp = MainWindow.getInstance().getWalkwide();
 
-        if(input.isWalkBackwardPressed()) { //used to be: if input == 0 -> moved backward
 
-            // if valid moved backwards to Igelfeld
-            if (IgeldFeldAction()) {
-
-                debugRoundplayerOutput();
-                controller.showMoveForwardBtn(false);
-                controller.showMoveBackwardBtn(false);
-                endOfTurnAction();
-                return;
-
-            }
-        }
 
         // stays in loop till player sucessful moved forward
         System.out.println("Zugweite bitte - du "+ roundplayer.getName()+" hast noch " +roundplayer.getKarotten() +" Karotten" );
@@ -273,6 +261,21 @@ public class SpielLogik implements Config, Runnable{
         int moveSuccess = -1;
 
         do{
+
+            if(input.isWalkBackwardPressed()) { //used to be: if input == 0 -> moved backward
+
+                // if valid moved backwards to Igelfeld
+                if (IgeldFeldAction()) {
+
+                    debugRoundplayerOutput();
+                    controller.showMoveForwardBtn(false);
+                    controller.showMoveBackwardBtn(false);
+                    endOfTurnAction();
+                    return;
+
+                }
+            }
+
             // forced to start from beginning
             if( roundplayer.getKarotten() == 0 ){
 
