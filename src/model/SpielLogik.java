@@ -60,7 +60,9 @@ public class SpielLogik implements Config, Runnable{
             return this.mitspieler.get(indexCtr);
 
     }
+
     public void playRound(){
+
         //wait for startround semaphore to be unlocked UwU
         controller.triggerFieldRender(mitspieler);
         try {
@@ -75,18 +77,24 @@ public class SpielLogik implements Config, Runnable{
         controller.showMoveBackwardBtn(true);
         controller.showMoveForwardBtn(true);
 
-        // player has already finished -> go to next player
-        if( roundplayer.getAktuelleFeldNr() == Config.numFeldListe.length -1 ) return;
+        // player has already finished game -> go to next player
+        if( roundplayer.getAktuelleFeldNr() == Config.numFeldListe.length -1 ) {
+
+            endOfTurnAction();
+            return;
+
+        }
 
         // player has to suspend
         if(roundplayer.isNextSuspend()) {
 
             roundplayer.suspend();
+            endOfTurnAction();
             return;
 
         }
 
-        //now continue hehe
+        //now continue here
 
 //--------> to do GUI Interaction should start here, not by suspending or already finsihed ---------------
 
@@ -256,11 +264,10 @@ public class SpielLogik implements Config, Runnable{
 
             }
         }
+
         // stays in loop till player sucessful moved forward
-        // to do not on Salatfeld if no Salate left
         System.out.println("Zugweite bitte - du "+ roundplayer.getName()+" hast noch " +roundplayer.getKarotten() +" Karotten" );
 
-        //int walkwide = 1;       // input paramter - needs to come from GUI
         int walkwide = input.getWalkWide();
 
         int moveSuccess = -1;
@@ -270,14 +277,14 @@ public class SpielLogik implements Config, Runnable{
             if( roundplayer.getKarotten() == 0 ){
 
                 System.out.println(" Keine Karotten mehr -> Zurück an Start + Resrc reset");
-                controller.openActionCardActionWindow("Du hast keine Karotten mehr! Du wurdest mit neuen Ressourcen an den Sart gesetzt.");
+                controller.openActionCardActionWindow("Du hast keine Karotten mehr! Du wurdest mit neuen Ressourcen an den Start gesetzt.");
                 roundplayer.resetRessources(this.configMorePlayers);
                 roundplayer.moveToField(0, this.platzierungsliste.size());
                 controller.triggerFieldRender(mitspieler);
-
+                break;
             }
 
-            //inp = MainWindow.getInstance().getWalkwide();
+
             walkwide = input.getWalkWide();
             moveSuccess = roundplayer.moveForward(walkwide, this.platzierungsliste.size());
             controller.triggerFieldRender(mitspieler);
