@@ -1,6 +1,7 @@
 package src.gui;
 
 import javafx.application.Platform;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -12,36 +13,63 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import src.model.Spieler;
 
+import java.util.List;
+
 public class GameWonActionWindow {
 
-    public static void showWinnerPopup(Spieler spieler) {
+    public static void showWinnersPopup(List<Spieler> platzierungsliste) {
         Platform.runLater(() -> {
             Stage popupStage = new Stage();
             popupStage.initModality(Modality.APPLICATION_MODAL);
             popupStage.initStyle(StageStyle.UTILITY);
             popupStage.setTitle("Spiel beendet");
 
-            // Großes Spielerbild
-            ImageView playerImageView = new ImageView(spieler.getPlayerImage());
-            playerImageView.setFitHeight(200);  // Größe nach Wunsch anpassen
-            playerImageView.setPreserveRatio(true);
+            // Titelüberschrift
+            Label titleLabel = new Label("Hase und Igel ist beendet");
+            titleLabel.setStyle("-fx-font-size: 28px; -fx-font-weight: bold;");
+            titleLabel.setAlignment(Pos.CENTER);
 
-            // Gewinner-Text
-            Label winLabel = new Label(spieler.getName() + " hat Hase und Igel gewonnen!");
-            winLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
+            VBox winnerBox = new VBox(15);
+            winnerBox.setAlignment(Pos.CENTER);
 
-            // OK-Button zum Beenden des Programms
+            for (int i = 0; i < platzierungsliste.size(); i++) {
+                Spieler spieler = platzierungsliste.get(i);
+                int place = i + 1;
+
+                // Spielerbild
+                ImageView imageView = new ImageView(spieler.getPlayerImage());
+                imageView.setFitWidth(64);
+                imageView.setFitHeight(64);
+                imageView.setPreserveRatio(true);
+
+                // Platzierung + Name
+                Label platzLabel = new Label("#" + place + "  " + spieler.getName());
+                platzLabel.setGraphic(imageView);
+                platzLabel.setGraphicTextGap(10);
+
+                // Stil entsprechend Platzierung
+                switch (place) {
+                    case 1 -> platzLabel.setStyle("-fx-font-size: 24px; -fx-text-fill: gold; -fx-font-weight: bold;");
+                    case 2 -> platzLabel.setStyle("-fx-font-size: 18px; -fx-text-fill: silver;");
+                    case 3 -> platzLabel.setStyle("-fx-font-size: 18px; -fx-text-fill: peru;");
+                    default -> platzLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: black;");
+                }
+
+                winnerBox.getChildren().add(platzLabel);
+            }
+
+            // OK-Button
             Button okButton = new Button("OK");
             okButton.setStyle("-fx-font-size: 16px;");
             okButton.setOnAction(e -> {
                 popupStage.close();
-                System.exit(0); // Beendet die komplette JavaFX-Anwendung
+                System.exit(0);
             });
 
-            VBox layout = new VBox(20);
-            layout.getChildren().addAll(playerImageView, winLabel, okButton);
+            VBox layout = new VBox(25, titleLabel, winnerBox, okButton);
             layout.setAlignment(Pos.CENTER);
-            layout.setStyle("-fx-padding: 30px; -fx-background-color: white;");
+            layout.setPadding(new Insets(30));
+            layout.setStyle("-fx-background-color: white;");
 
             popupStage.setScene(new Scene(layout));
             popupStage.showAndWait();

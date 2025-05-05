@@ -335,7 +335,7 @@ public class SpielLogik implements Config, Runnable{
             if( this.platzierungsliste.size() == this.mitspieler.size() - 1 ){
                 System.out.println("Game finished");
 
-                GameWonActionWindow.showWinnerPopup(roundplayer);
+                GameWonActionWindow.showWinnersPopup(platzierungsliste);
                 // to do finish Game
 
             }
@@ -362,7 +362,9 @@ public class SpielLogik implements Config, Runnable{
      * Function that should be called at the end of a turn - resets buttons and increases the increment counter
      */
     private void endOfTurnAction(){
-        controller.updatePlayerResourcesWithPlayer(this.mitspieler.get(this.indexCtr));
+        if(this.indexCtr >= 0) { //wir brauchen diesen check für den edge-case, falls spieler 0 einen weiteren turn hat und der index auf -1 gesetzt wird
+            controller.updatePlayerResourcesWithPlayer(this.mitspieler.get(this.indexCtr));
+        }
         this.indexCtr ++;
         if( this.indexCtr >= this.mitspieler.size() ) this.indexCtr = 0;
         controller.showMoveBackwardBtn(false);

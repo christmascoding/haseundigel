@@ -34,8 +34,13 @@ public class PlayerSelectionScreen {
     private Stage primaryStageReference;
 
     public List<Spieler> getPlayers() {
-        return new ArrayList<>(spielerMap.values());
+        List<Spieler> orderedList = new ArrayList<>();
+        for (String name : playerListView.getItems()) {
+            orderedList.add(spielerMap.get(name));
+        }
+        return orderedList;
     }
+
 
     public void showAndWait() {
         Stage stage = new Stage();
