@@ -219,10 +219,8 @@ public class SpielLogik implements Config, Runnable{
                         roundplayer.eatSalate();
                         // Position * 10 karotten bekommen
                         for(int position: getPosition()){
-
                             roundplayer.changeKarotten(position * 10);
                             controller.updatePlayerResources();
-
                         }
 
                         roundplayer.didNotWalked();
@@ -238,9 +236,10 @@ public class SpielLogik implements Config, Runnable{
         // move backward?
         System.out.println("Rückwärts auf Igelfeld? - 0 -- du "+ roundplayer.getName()+" hast noch " +roundplayer.getKarotten() +" Karotten" );
         // wait for the GUI -> lock semaphore
-        //Don't wait for input if the input was already received (in Karottenfeld or Salatfeld)
+        //Don't wait for input if the input was already received (in Karottenfeld or Salatfeld if Salatfeld was not triggered)
 
-        if(currentFeld != PositionsFeld.Salatfeld && currentFeld != PositionsFeld.Karottenfeld){
+        if((currentFeld != PositionsFeld.Salatfeld) && currentFeld != PositionsFeld.Karottenfeld ||
+                (roundplayer.getLastWalkedWide() == 0 && currentFeld == PositionsFeld.Salatfeld)){
             try {
                 controller.waitForInputLock.acquire(1);
                 System.out.println("Semaphore locked at pos3");
