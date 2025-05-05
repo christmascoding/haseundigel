@@ -505,6 +505,20 @@ public class MainWindow extends Application {
 
         });
     }
+    public void updatePlayerGUI(Spieler current) {
+        Platform.runLater(() -> {
+
+            //update resource
+            resourceTable.getChildren().remove(karrottenLabel);
+            resourceTable.getChildren().remove(salateLabel);
+            karrottenLabel = new Label(String.valueOf(current.getKarotten()));
+            salateLabel = new Label(String.valueOf(current.getSalate()));
+            resourceTable.add(karrottenLabel, 1, 0);
+            resourceTable.add(salateLabel, 1, 1);
+
+
+        });
+    }
     public void updateTurnBox(){
         Platform.runLater(() -> {
 

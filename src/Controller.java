@@ -96,6 +96,9 @@ public class Controller {
     public void updatePlayerResources(){
         MainWindow.getInstance().updatePlayerGUI();
     }
+    public void updatePlayerResourcesWithPlayer(Spieler p){
+        MainWindow.getInstance().updatePlayerGUI(p);
+    }
 
     /**
      * Updates the box that calls next player on turn

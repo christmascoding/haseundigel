@@ -65,6 +65,7 @@ public class SpielLogik implements Config, Runnable{
 
         //wait for startround semaphore to be unlocked UwU
         controller.triggerFieldRender(mitspieler);
+
         try {
             controller.startTurnLock.acquire();
             System.out.println("Start turn locked at pos 1");
@@ -359,6 +360,7 @@ public class SpielLogik implements Config, Runnable{
      * Function that should be called at the end of a turn - resets buttons and increases the increment counter
      */
     private void endOfTurnAction(){
+        controller.updatePlayerResourcesWithPlayer(this.mitspieler.get(this.indexCtr));
         this.indexCtr ++;
         if( this.indexCtr >= this.mitspieler.size() ) this.indexCtr = 0;
         controller.showMoveBackwardBtn(false);
