@@ -37,7 +37,7 @@ public class Controller {
      */
     public Semaphore waitForInputLock = new Semaphore(0);
 
-    private SpielLogik logik;
+    private final SpielLogik logik;
     private MainWindow mainWindow;
 
     public Controller(SpielLogik logik, MainWindow mainWindow){
@@ -95,6 +95,9 @@ public class Controller {
      */
     public void updatePlayerResources(){
         MainWindow.getInstance().updatePlayerGUI();
+    }
+    public void updatePlayerResourcesWithPlayer(Spieler p){
+        MainWindow.getInstance().updatePlayerGUI(p);
     }
 
     /**
