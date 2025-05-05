@@ -72,6 +72,7 @@ public class GUICoordinateTable {
         coordinates.add(new Coordinate(1634, 1722));
         coordinates.add(new Coordinate(1634, 1535));
         coordinates.add(new Coordinate(1634, 1358));
+        coordinates.add(new Coordinate(1634, 1150));
     }
 
     /**
