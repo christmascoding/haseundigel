@@ -95,8 +95,6 @@ public class SpielLogik implements Config, Runnable{
 
         //now continue here
 
-//--------> to do GUI Interaction should start here, not by suspending or already finsihed ---------------
-
         // check fields at begin of round (positionfeld + Karottenfeld + Salatfeld)
         PositionsFeld currentFeld = this.posFeldListe.get(roundplayer.getAktuelleFeldNr());
         switch(currentFeld){
