@@ -19,7 +19,7 @@ public class ActioncardActionWindow {
 
     private static void openWindow(String text) {
         Stage window = new Stage();
-        window.initModality(Modality.APPLICATION_MODAL); // Blockiert andere Fenster, bis geschlossen
+        window.initModality(Modality.APPLICATION_MODAL); //hehe modal blocking window
 
         Label label = new Label(text);
         label.setWrapText(true);
@@ -34,6 +34,6 @@ public class ActioncardActionWindow {
         Scene scene = new Scene(layout, 400, 200);
         window.setScene(scene);
         window.setTitle("Aktionskarte");
-        window.showAndWait(); // wartet, bis Fenster geschlossen wird
+        window.showAndWait(); //launch window
     }
 }

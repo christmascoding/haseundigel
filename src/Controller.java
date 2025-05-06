@@ -13,12 +13,6 @@ public class Controller {
 
     public boolean gameActive;
     /**
-     * The playerSelectionLock Semaphore is used once per game.
-     * It gets acquired by the logic before the logic starts
-     * and is freed by the game after the playerSelectionScreen is closed.
-     */
-    public Semaphore playerSelectionLock = new Semaphore(0);
-    /**
      * The startTurnLock is used once per turn.
      * It gets acquired by the logic before the logic triggers the GUI to update the player statistics.
      * After it's freed by the GUI by a press of the "Start turn" button, the logic can update
@@ -38,11 +32,9 @@ public class Controller {
     public Semaphore waitForInputLock = new Semaphore(0);
 
     private final SpielLogik logik;
-    private MainWindow mainWindow;
 
     public Controller(SpielLogik logik, MainWindow mainWindow){
         this.logik = logik;
-        this.mainWindow = mainWindow;
         gameActive = false;
     }
 
@@ -61,9 +53,6 @@ public class Controller {
      */
     public InputFormat grabInputFromGUI(){
         return MainWindow.getInstance().getInputs();
-    }
-    public void beginTurnTrigger(){
-
     }
     public void triggerFieldRender(List<Spieler> players){
         MainWindow.getInstance().clearPlayersOnField();

@@ -33,27 +33,7 @@ public class GameWonActionWindow {
             winnerBox.setAlignment(Pos.CENTER);
 
             for (int i = 0; i < platzierungsliste.size(); i++) {
-                Spieler spieler = platzierungsliste.get(i);
-                int place = i + 1;
-
-                // Spielerbild
-                ImageView imageView = new ImageView(spieler.getPlayerImage());
-                imageView.setFitWidth(64);
-                imageView.setFitHeight(64);
-                imageView.setPreserveRatio(true);
-
-                // Platzierung + Name
-                Label platzLabel = new Label("#" + place + "  " + spieler.getName());
-                platzLabel.setGraphic(imageView);
-                platzLabel.setGraphicTextGap(10);
-
-                // Stil entsprechend Platzierung
-                switch (place) {
-                    case 1 -> platzLabel.setStyle("-fx-font-size: 24px; -fx-text-fill: gold; -fx-font-weight: bold;");
-                    case 2 -> platzLabel.setStyle("-fx-font-size: 18px; -fx-text-fill: silver;");
-                    case 3 -> platzLabel.setStyle("-fx-font-size: 18px; -fx-text-fill: peru;");
-                    default -> platzLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: black;");
-                }
+                Label platzLabel = getLabel(platzierungsliste, i);
 
                 winnerBox.getChildren().add(platzLabel);
             }
@@ -74,5 +54,30 @@ public class GameWonActionWindow {
             popupStage.setScene(new Scene(layout));
             popupStage.showAndWait();
         });
+    }
+
+    private static Label getLabel(List<Spieler> platzierungsliste, int i) {
+        Spieler spieler = platzierungsliste.get(i);
+        int place = i + 1;
+
+        // Spielerbild
+        ImageView imageView = new ImageView(spieler.getPlayerImage());
+        imageView.setFitWidth(64);
+        imageView.setFitHeight(64);
+        imageView.setPreserveRatio(true);
+
+        // Platzierung + Name
+        Label platzLabel = new Label("#" + place + "  " + spieler.getName());
+        platzLabel.setGraphic(imageView);
+        platzLabel.setGraphicTextGap(10);
+
+        // Stil entsprechend Platzierung
+        switch (place) {
+            case 1 -> platzLabel.setStyle("-fx-font-size: 24px; -fx-text-fill: gold; -fx-font-weight: bold;");
+            case 2 -> platzLabel.setStyle("-fx-font-size: 18px; -fx-text-fill: silver;");
+            case 3 -> platzLabel.setStyle("-fx-font-size: 18px; -fx-text-fill: peru;");
+            default -> platzLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: black;");
+        }
+        return platzLabel;
     }
 }

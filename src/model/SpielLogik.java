@@ -3,8 +3,8 @@ package src.model;
 import java.util.*;
 import java.util.List;
 
-import javafx.application.Application;
-import javafx.scene.image.Image;
+
+
 import src.Controller;
 import src.gui.ActioncardActionWindow;
 import src.gui.GameWonActionWindow;
@@ -16,18 +16,16 @@ public class SpielLogik implements Config, Runnable{
 
     private int indexCtr; // zählt mit wer dran ist
 
-    private Aktionskartenstapel aktionsKartenStapel;
+    private final Aktionskartenstapel aktionsKartenStapel;
 
-    private List<PositionsFeld> posFeldListe = new ArrayList<PositionsFeld>(); // enthält nach Instanziierung alle
+    private final List<PositionsFeld> posFeldListe = new ArrayList<>(); // enthält nach Instanziierung alle
                                                                                // Positionsfelder in Reihenfolge auf dem Spielbrett
 
-    private List<Spieler> mitspieler = new ArrayList<Spieler>();               // Liste alle Mitspieler
+    private final List<Spieler> mitspieler = new ArrayList<>();               // Liste alle Mitspieler
 
-    private List<Spieler> platzierungsliste = new ArrayList<Spieler>();        // Liste alle Mitspieler im Ziel, chronologisch nach Zieleinlauf
+    private final List<Spieler> platzierungsliste = new ArrayList<>();        // Liste alle Mitspieler im Ziel, chronologisch nach Zieleinlauf
 
     private Controller controller;
-
-    private Image testimage;
 
     private InputFormat input;
 
@@ -109,8 +107,6 @@ public class SpielLogik implements Config, Runnable{
                 // to do replace by GUI interaction
                 System.out.println("0 - Karottenfeld nutzen; sonst laufen");
                 controller.showCarrotBtn(true);
-                /*Scanner scan = new Scanner(System.in);
-                int inp = scan.nextInt();*/
                 // wait for the GUI -> lock semaphore
                 try {
                     controller.waitForInputLock.acquire(1);
@@ -201,8 +197,6 @@ public class SpielLogik implements Config, Runnable{
                 if( roundplayer.getLastWalkedWide() > 0 && roundplayer.getSalate() > 0 ){
 
                     System.out.println("0 - Salatfeld nutzen; sonst laufen");
-                    //scan = new Scanner(System.in);
-                    //inp = scan.nextInt();
                     // wait for the GUI -> lock semaphore
                     controller.showSaladBtn(true);
                     try {
@@ -499,18 +493,14 @@ public class SpielLogik implements Config, Runnable{
             posFeldListe.add(nextFeld);
         }
 
-        /** printe posFeldListe Reihenfolge
-        for(PositionsFeld thisfeld: posFeldListe){
-            System.out.println(thisfeld);
-        }
-        */
-
     }
 
 
-    /** to do replace locationID with this.mitspieler.get(this.indexCtr).getAktuellesFeld() ?
-    * returned index des nächsten Positionsfeldes eines bestimmten types, existiert kein Folgendes mehr,
-     * so wird die eingegebene ID returned */
+    /**
+     * returned index des nächsten Positionsfeldes eines bestimmten types, existiert kein Folgendes mehr,
+     * so wird die eingegebene ID returned
+     */
+
     private int findNextField(int locationID, PositionsFeld type){
 
         // list with all elements from nextField till Ziel

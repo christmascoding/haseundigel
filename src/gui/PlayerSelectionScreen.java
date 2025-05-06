@@ -31,7 +31,6 @@ public class PlayerSelectionScreen {
 
     private final Image[] loadedImages = new Image[6];
     private final ToggleButton[] imageButtons = new ToggleButton[6];
-    private Stage primaryStageReference;
 
     public List<Spieler> getPlayers() {
         List<Spieler> orderedList = new ArrayList<>();
@@ -44,7 +43,6 @@ public class PlayerSelectionScreen {
 
     public void showAndWait() {
         Stage stage = new Stage();
-        this.primaryStageReference = stage;
         stage.setTitle("Spielerauswahl");
 
         // Bilder vorladen
@@ -132,10 +130,12 @@ public class PlayerSelectionScreen {
 
         Button doneButton = new Button("Fertig");
         doneButton.setOnAction(e -> {
-            if(spielerMap.values().size() >= 2){
+            if(spielerMap.size() >= 2){
                 stage.close();
             }
         });
+
+        stage.setOnCloseRequest(e -> System.exit(0));
 
         HBox buttonRow = new HBox(10, addButton, removeButton, doneButton);
         buttonRow.setAlignment(Pos.CENTER_RIGHT);
@@ -143,10 +143,9 @@ public class PlayerSelectionScreen {
         VBox rightBox = new VBox(10, nameLabel, nameInput, new Label("Bild auswählen:"), imageGrid, buttonRow);
         rightBox.setPadding(new Insets(10));
         rightBox.setAlignment(Pos.TOP_LEFT);
-
         HBox root = new HBox(playerListBox, rightBox);
         Scene scene = new Scene(root, 750, 360);
         stage.setScene(scene);
-        stage.showAndWait(); // blockiert Aufrufer, bis Fenster geschlossen wird
+        stage.showAndWait(); // blockiert Aufrufer, bis Fenster geschlossen wirdk
     }
 }
