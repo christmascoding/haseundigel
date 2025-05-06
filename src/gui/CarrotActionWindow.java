@@ -16,7 +16,7 @@ public class CarrotActionWindow {
     }
 
     public static Action showCarrotActionDialog() {
-        // Warten wenn außerhalb JavaFX Thread
+        // because this is called async we wait until were in the javafx thread, this time without runLater
         if (!Platform.isFxApplicationThread()) {
             final Action[] resultHolder = new Action[1];
             final Object lock = new Object();
@@ -38,7 +38,6 @@ public class CarrotActionWindow {
 
             return resultHolder[0];
         } else {
-            // Wir sind bereits im JavaFX-Thread
             return showDialog();
         }
     }
@@ -54,7 +53,7 @@ public class CarrotActionWindow {
 
         alert.getButtonTypes().setAll(aufnehmenButton, abgebenButton);
 
-        // Fenster-Schließen verhindern
+        // prevent closing window
         Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
         stage.setOnCloseRequest(WindowEvent::consume);
 
@@ -67,7 +66,7 @@ public class CarrotActionWindow {
                 return Action.ABGEBEN;
             }
         }
-        // Eigentlich nie erreichbar, aber zur Sicherheit
-        return Action.AUFNEHMEN;
+        return Action.AUFNEHMEN; // sanity check
+
     }
 }

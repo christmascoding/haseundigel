@@ -188,10 +188,6 @@ public class MainWindow extends Application {
 
         // end turn screen
         endTurn();
-        //spielerles.add(test5);
-        //spielerles.add(test6);
-        //spielerles.add(test7);
-        //spielerles.add(test8);
 
         primaryStage.show();
         //displayPlayersOnField(spielerles, 0);
@@ -225,9 +221,7 @@ public class MainWindow extends Application {
 
 
     public void clearPlayersOnField() {
-        Platform.runLater(() -> {
-            fieldPane.getChildren().removeIf(node -> node instanceof ImageView);
-        });
+        Platform.runLater(() -> fieldPane.getChildren().removeIf(node -> node instanceof ImageView));
     }
 
     /**
@@ -294,9 +288,7 @@ public class MainWindow extends Application {
                 }
             } else {
                 // Anordnung wie vorher, wenn weniger als oder genau 2 Spieler
-                for (int i = 0; i < players.size(); i++) {
-                    Spieler p = players.get(i);
-
+                for (Spieler p : players) {
                     // Lade das Bild für den Spieler (Igel)
                     Image img;
                     try {
@@ -354,17 +346,6 @@ public class MainWindow extends Application {
     // Knopf-Funktionen
 
     /**
-     * Wird aufgerufen, wenn der Rückwärts-Knopf gedrückt wird
-     */
-    private void reversePressed() {
-        if(controller.waitForInputLock.hasQueuedThreads()){ //falls acquired, dann releasen
-            controller.waitForInputLock.release();
-        }
-        resetInputs();
-        inputs.setWalkBackwardPressed(true);
-    }
-
-    /**
      * Wird aufgerufen, wenn der Vorwärts-Knopf gedrückt wird
      */
     private void forwardPressed() {
@@ -391,6 +372,10 @@ public class MainWindow extends Application {
             inputs.setWalkBackwardPressed(true);
         }
     }
+
+    /**
+     * Wird aufgerufen, wenn Salat-Essen-Knopf gedrückt wird
+     */
     private void eatSaladPressed(){
         if (controller.waitForInputLock.hasQueuedThreads()) {  // Falls acquired, dann releasen und ausführen
             controller.waitForInputLock.release();
@@ -455,26 +440,12 @@ public class MainWindow extends Application {
     }
 
     /**
-     * Wird aufgerufen, wenn der Spieler nichts mehr machen kann (wenn sein Zug vollendet ist, dann kann er nur noch seinen Zug beenden mit dem Zug Beenden button)
-     */
-    private void grayOutButtons(boolean state) {
-        moveForwardBtn.setDisable(!state);
-        moveBackwardBtn.setDisable(!state);
-        eatCarrotBtn.setDisable(!state);
-        eatSaladBtn.setDisable(!state);
-        endTurnBtn.setDisable(!state);
-        getCarrotBtn.setDisable(!state);
-    }
-
-    /**
      * Wird aufgerufen, wenn der Spieler seinen Zug beendet, und der nächste den Zug beginnen muss (damit sie sich nicht in die Möhren schauen!)
      * Diese Funktion versteckt alle Knöpfe und zeigt nur einen Knopf mit "Starte nächsten Zug" an.
      *
      * @param state true, wenn Pausescreen angezeigt werden soll
      */
     private void showPauseScreen(boolean state) {
-        //Spieler nächsterSpieler = null; //TODO
-        //nächsterSpieler.getName();
         pauseScreen.setVisible(state);
         playerUI.setVisible(!state);
     }
@@ -505,6 +476,11 @@ public class MainWindow extends Application {
 
         });
     }
+
+    /**
+     * Updates the Player Resources with a Player given
+     * @param current Player to update the resources with
+     */
     public void updatePlayerGUI(Spieler current) {
         Platform.runLater(() -> {
 
@@ -519,6 +495,10 @@ public class MainWindow extends Application {
 
         });
     }
+
+    /**
+     * Updates the GUI box that contains the Player who is currently playing
+     */
     public void updateTurnBox(){
         Platform.runLater(() -> {
 
@@ -529,36 +509,12 @@ public class MainWindow extends Application {
         });
     }
 
-
+    /**
+     * Function to get the GUIs inputs
+     * @return Inputs from GUI
+     */
     public InputFormat getInputs(){
         return inputs;
-    }
-
-
-    /**
-     * Zeigt dem Spieler eine Karte an, sobald er eine gezogen hat
-     *
-     * @param cardText Text, der auf der Karte ist
-     */
-    public void showCardText(String cardText) {
-
-    }
-
-    /**
-     * Schaltet den "Karotten erhalten" Knopf ein und aus
-     * @param state true, wenn der Knopf sichtbar sein soll
-     */
-    public void showGetCarrotBtn(boolean state) {
-        getCarrotBtn.setDisable(!state);
-    }
-
-
-    /**
-     * Sets the input parameters from the GUI into the controller
-     * REDUNDANT?
-     */
-    private void setInputParameters(){
-        resetInputs();
     }
 
     /**
@@ -586,7 +542,7 @@ public class MainWindow extends Application {
 
     /**
      * Returns the instance of the MainWindow
-     * @return
+     * @return Instance of MainWindow to interact with non-static functions
      */
     public static MainWindow getInstance() {
         return instance;
